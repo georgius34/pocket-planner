@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "132010785496",
+    "project_id": "pocketplanner-9b95f",
+    "storage_bucket": "pocketplanner-9b95f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132010785496:android:931f41eacf2104b875f5ad",
+        "android_client_info": {
+          "package_name": "com.example.pocket_planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeAjFF787Ub6Y7htxpklI2b3TReB6lyVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
