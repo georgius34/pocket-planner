@@ -14,6 +14,10 @@ https://youtu.be/VFDbZk2xhO4?si=igzUc6gSiMkpAgew
 Part 2
 https://youtu.be/p7MkQHfVbcQ?si=-RfznHZYeTz_DLcS
 
+Link guide:
+https://www.youtube.com/watch?v=9YuKvGElOe8&t=5s
+progress: 55:49
+
 -TO RUN (klik kanan main.dart > run without debug)
 
 -TO INSTALL FIREBASE:
