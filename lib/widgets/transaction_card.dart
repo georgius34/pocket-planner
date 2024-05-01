@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pocket_planner/utils/icons_list.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
 class TransactionCard extends StatelessWidget {
-  const TransactionCard({super.key});
+  TransactionCard({super.key});
+
+  var appIcons = AppIcons();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class TransactionCard extends StatelessWidget {
               physics: ScrollPhysics(),
               itemBuilder: (context, index){
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 8), //padding list datany
                 child: Container(
                   decoration: 
                     BoxDecoration(
@@ -41,6 +45,22 @@ class TransactionCard extends StatelessWidget {
                          ]),
                     
                   child: ListTile(
+                    minVerticalPadding: 10, //padding all data
+                    contentPadding: 
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    leading: Container(
+                         width: 70,
+                        height: 100,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.green.withOpacity(0.2),
+                        ),
+                        child: Center(child: FaIcon(appIcons.getExpenseCategoryIcons('home'))),
+                       ),
+                    ),
                     title: Row(
                       children: [
                       Expanded(child: Text("Gaji harian")),

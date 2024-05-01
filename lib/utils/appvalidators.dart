@@ -22,10 +22,16 @@ class AppValidator {
     return null;
   }
 
-  //contoh validasi phone number dk tau tepake ato ndk
   String? validateUsename(value){
     if(value!.isEmpty){
       return 'Harus ada isi';
+    }
+    return null;
+  }
+
+  String? isEmptyCheck(value){
+    if(value!.isEmpty){
+      return 'Harus ada data';
     }
     return null;
   }

@@ -16,7 +16,8 @@ https://youtu.be/p7MkQHfVbcQ?si=-RfznHZYeTz_DLcS
 
 Link guide:
 https://www.youtube.com/watch?v=9YuKvGElOe8&t=5s
-progress: 55:49
+progress: 1:18:51
+akalin caro bikin balance jadi 0
 
 -TO RUN (klik kanan main.dart > run without debug)
 
@@ -48,6 +49,13 @@ Add Dependencies di pubspec.yaml:
  firebase_core: ^2.27.2
 firebase_auth: ^4.18.0
 cloud_firestore: ^4.15.10
+font_awesome_flutter: ^10.6.0
+
+KALO FONT AWESOME DK KEBACO
+RUN DI TERMINAL
+flutter pub get
+flutter clean 
+
 
 create new page (template)
 stl > flutter stateless/full widget
