@@ -1,18 +1,27 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pocket_planner/firebase_options.dart';
 import 'package:pocket_planner/screen/home_screen.dart';
-import 'package:pocket_planner/screen/sign_up.dart';
+// import 'package:pocket_planner/screen/sign_up.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_planner/services/db.dart';
 
 Future<void> main() async {
   await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
 );
-  runApp(const MyApp());
+  // Create an instance of your Db class
+  Db db = Db();
+
+  // Add a user and obtain the generated user ID
+  String userId = await db.addUser();
+
+  // Pass the generated user ID to the MyApp widget
+  runApp(MyApp(userId: userId));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String userId;
+  const MyApp({Key? key, required this.userId}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -28,7 +37,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+        home: HomeScreen(userId: userId), // Pass the userId to HomeScreen
+
     );
   }
 }

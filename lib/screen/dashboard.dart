@@ -5,7 +5,9 @@ import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final String userId; // Add userId as a parameter
+
+  const Dashboard({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -14,7 +16,17 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int currentIndex = 0;
 
-  var pageViewList = [HomeScreen(), TransactionScreen()];
+  var pageViewList; // Initialize pageViewList in initState()
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize pageViewList with HomeScreen and TransactionScreen widgets
+    pageViewList = [
+      HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
+      TransactionScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

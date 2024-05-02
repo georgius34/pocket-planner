@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 
 class HeroCard extends StatelessWidget {
   HeroCard({
-    super.key,
+    super.key, required this.userId,
   });
-
-  final Stream<DocumentSnapshot> _usersStream = 
-    FirebaseFirestore.instance.collection('users').doc().snapshots();
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
+      final Stream<DocumentSnapshot> _usersStream = 
+    FirebaseFirestore.instance.collection('users').doc(userId).snapshots();
     return StreamBuilder<DocumentSnapshot>(
       stream: _usersStream,
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
