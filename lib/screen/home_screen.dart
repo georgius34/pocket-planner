@@ -15,15 +15,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  _dialogBuilder(BuildContext context){
-    return showDialog(
-      context: context,
-      builder: (context){
+  _dialogBuilder(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (context) {
       return AlertDialog(
-        content: AddTransactionForm(),
+        content: AddTransactionForm(userId: widget.userId), // Pass userId here
       );
-    });
-  }
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {

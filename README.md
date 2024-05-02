@@ -16,7 +16,7 @@ https://youtu.be/p7MkQHfVbcQ?si=-RfznHZYeTz_DLcS
 
 Link guide:
 https://www.youtube.com/watch?v=9YuKvGElOe8&t=5s
-progress: 1:18:51
+progress 1:25:36
 akalin caro bikin balance jadi 0
 
 -TO RUN (klik kanan main.dart > run without debug)
