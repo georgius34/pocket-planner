@@ -27,7 +27,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   var appValidator = AppValidator();
   var amountEditController = TextEditingController();
   var titleEditController = TextEditingController();
-  var uid = Uuid();
+  var uid = Uuid(); 
 
  Future<void> _submitForm(String userId) async {
 
@@ -44,7 +44,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
     // Ensure the user document exists
     if (userDoc.exists) {
-      int timestamp = DateTime.now().microsecondsSinceEpoch;
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
       var amount = int.parse(amountEditController.text);
       DateTime date = DateTime.now();
 
@@ -163,7 +163,10 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           },
           child: 
           isLoader ? Center(child: CircularProgressIndicator()):
-          Text("Tambah Transaksi"))
+          Text("Tambah Transaksi",
+          style: TextStyle(color: Colors.green),
+            ),
+           )
           ],
         )
       ),

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pocket_planner/firebase_options.dart';
+import 'package:pocket_planner/screen/dashboard.dart';
 import 'package:pocket_planner/screen/home_screen.dart';
 // import 'package:pocket_planner/screen/sign_up.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,12 @@ Future<void> main() async {
   options: DefaultFirebaseOptions.currentPlatform,
 );
   // Create an instance of your Db class
-  Db db = Db();
+  // Db db = Db();
 
   // Add a user and obtain the generated user ID
-  String userId = await db.addUser();
+  // String userId = await db.addUser();
+
+  String userId = '354eb982-3ee2-429b-9cb7-6e1d8fb336e7';
 
   // Pass the generated user ID to the MyApp widget
   runApp(MyApp(userId: userId));
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-        home: HomeScreen(userId: userId), // Pass the userId to HomeScreen
+        home: Dashboard(userId: userId), // Pass the userId to HomeScreen
 
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/widgets/add_transaction.dart';
 import 'package:pocket_planner/widgets/hero_card.dart';
-import 'package:pocket_planner/widgets/transaction_card.dart';
+import 'package:pocket_planner/widgets/transactions_card.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
             floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.blue.shade900,
+              backgroundColor: Colors.green.shade900,
               onPressed: ((){
                 _dialogBuilder(context);
               }),
@@ -42,11 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Container(  
         width: double.infinity,
-        child: Column(
-          children: [
-            HeroCard(userId: widget.userId), // Use widget.userId
-            TransactionCard(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HeroCard(userId: widget.userId), // Use widget.userId
+              TransactionsCard(userId: widget.userId),
+            ],
+          ),
         )), // ini color bodyny
     );
   }

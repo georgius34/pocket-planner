@@ -11,22 +11,22 @@ class NavBar extends StatelessWidget {
     return NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: onDestinationSelected,
-        indicatorColor: Colors.green.shade300,
+        indicatorColor: Colors.green.shade100,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(
               Icons.home,
-              color: Colors.black
+              color: Colors.green
               ),
-            label: 'Home',
+            label: 'Dashboard',
           ),
           NavigationDestination(
             icon: Icon(
-                  Icons.payment,
-              color: Colors.black
+              Icons.savings,
+              color: Colors.green
               ),
-            label: 'Transaction',
+            label: 'Rencana Tabungan',
           ),
         ],
       );

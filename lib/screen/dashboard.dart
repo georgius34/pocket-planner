@@ -24,7 +24,7 @@ class _DashboardState extends State<Dashboard> {
     // Initialize pageViewList with HomeScreen and TransactionScreen widgets
     pageViewList = [
       HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
-      TransactionScreen(),
+      RencanaTabunganScreen(),
     ];
   }
 
