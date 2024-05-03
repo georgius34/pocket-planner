@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/widgets/transaction_card.dart';
 //ignore_for_file: prefer_const_constructors
@@ -8,6 +7,7 @@ import 'package:pocket_planner/widgets/transaction_card.dart';
 class TransactionsCard extends StatelessWidget {
   final String userId;
 
+  // ignore: prefer_const_constructors_in_immutables, use_super_parameters
   TransactionsCard({required this.userId, Key? key}) : super(key: key);
 
   @override
@@ -35,6 +35,7 @@ class TransactionsCard extends StatelessWidget {
 class TransactionList extends StatelessWidget {
   final String userId;
   
+ // ignore: prefer_const_constructors_in_immutables, use_super_parameters
  TransactionList({required this.userId, Key? key}) : super(key: key);
 
   @override

@@ -1,10 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pocket_planner/firebase_options.dart';
 import 'package:pocket_planner/screen/dashboard.dart';
-import 'package:pocket_planner/screen/home_screen.dart';
-// import 'package:pocket_planner/screen/sign_up.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/services/db.dart';
 
 Future<void> main() async {
   await Firebase.initializeApp(

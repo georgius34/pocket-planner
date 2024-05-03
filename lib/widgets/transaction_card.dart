@@ -5,6 +5,7 @@ import 'package:pocket_planner/utils/icons_list.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
+// ignore: must_be_immutable
 class TransactionCard extends StatelessWidget {
  TransactionCard({
     super.key, required this.data,
