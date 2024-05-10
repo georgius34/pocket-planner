@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/widgets/transaction_card.dart';
+import 'package:pocket_planner/widgets/transaction_detail.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
@@ -64,8 +65,25 @@ class TransactionList extends StatelessWidget {
       physics: ScrollPhysics(),
       itemBuilder: (context, index){
         var cardData = data[index];
-      return TransactionCard(data: cardData);
-    });
-    });
+      // Wrap each TransactionCard with GestureDetector
+            return GestureDetector(
+              onTap: () {
+                // Navigate to transaction details page when clicked
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransactionDetailsPage(
+                      userId: userId, 
+                      transactionData: cardData.data(), // Pass transaction data to details page
+                    ),
+                  ),
+                );
+              },
+              child: TransactionCard(data: cardData),
+            );
+          },
+        );
+      },
+    );
   }
 }

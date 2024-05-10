@@ -4,6 +4,7 @@ import 'package:pocket_planner/widgets/hero_card.dart';
 import 'package:pocket_planner/widgets/transactions_card.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: sized_box_for_whitespace
 
 class HomeScreen extends StatefulWidget {
   final String userId;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/screen/home_screen.dart';
-import 'package:pocket_planner/screen/transaction.dart';
+import 'package:pocket_planner/screen/rencana_tabungan_screen.dart';
 import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
 
@@ -24,14 +24,14 @@ class _DashboardState extends State<Dashboard> {
     // Initialize pageViewList with HomeScreen and TransactionScreen widgets
     pageViewList = [
       HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
-      RencanaTabunganScreen(),
+      RencanaTabunganScreen(userId: widget.userId),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NavBar(selectedIndex: currentIndex, 
+      bottomNavigationBar: NavBar(selectedIndex: currentIndex,
       onDestinationSelected: (int value) { 
         setState(() {
           currentIndex = value;
