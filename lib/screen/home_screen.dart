@@ -38,7 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Icon(Icons.add, color: Colors.white),
             ),
             appBar: AppBar(
-              backgroundColor: Colors.green.shade600,
+              backgroundColor: Colors.green.shade900,
+              title: Text(
+                'Dashboard',
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
+              ),
+              
         // actions: [IconButton(onPressed: , icon: )],
       ),
       body: Container(  

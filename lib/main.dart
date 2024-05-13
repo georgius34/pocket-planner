@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:pocket_planner/firebase_options.dart';
 import 'package:pocket_planner/screen/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_planner/screen/splash_screen.dart';
 
 Future<void> main() async {
   await Firebase.initializeApp(
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-        home: Dashboard(userId: userId), // Pass the userId to HomeScreen
+        home: SplashScreen(userId: userId), // Pass the userId to HomeScreen
 
     );
   }

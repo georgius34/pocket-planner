@@ -21,8 +21,8 @@ class TransactionsCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                "List Transaksi",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                "Transaksi Terbaru",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.green.shade900, wordSpacing: 1.5),
                 )
               ],
             ),

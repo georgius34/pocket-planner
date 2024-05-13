@@ -33,7 +33,12 @@ class TransactionCard extends StatelessWidget {
                 blurRadius: 3.0,
                 spreadRadius: 4.0
                 ),
-               ]),
+               ],
+                border: Border.all(
+                      color: Colors.black.withOpacity(0.2), // Set border color to black
+                      width: 2, // Set border width
+                ),
+               ),
           
         child: ListTile(
           minVerticalPadding: 10, //padding all data
@@ -62,7 +67,16 @@ class TransactionCard extends StatelessWidget {
           ),
           title: Row(
             children: [
-            Expanded(child: Text('${data['title']}')),
+            Expanded(
+                child: Text(
+                  '${data['title']}',
+                  style: TextStyle(
+                    fontSize: 16, // Adjust font size
+                    fontWeight: FontWeight.w500, // Adjust font weight
+                    color: Colors.black, // Adjust text color
+                  ),
+                ),
+              ),
             Text("${data['type'] == 'credit' ? '+' : '-'}  Rp ${data['amount']}",
              style: TextStyle(color: data['type'] == 'credit'
                 ? Colors.green

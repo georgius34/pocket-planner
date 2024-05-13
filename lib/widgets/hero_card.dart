@@ -46,7 +46,7 @@ class Cards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.green.shade600,
+      color: Colors.green.shade900,
       child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, //bikin all left
         children: [
@@ -58,10 +58,10 @@ class Cards extends StatelessWidget {
                 Text(
                   "Total Balance",
                    style: TextStyle(
-                    fontSize: 18, 
+                    fontSize: 20, 
                     color: Colors.white, 
                     height: 1.2,
-                     fontWeight: FontWeight.w600),
+                     fontWeight: FontWeight.w500),
                      ),
                 Text(
                   "Rp ${data['remainingAmount']}",
@@ -114,7 +114,11 @@ class CardOne extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
                     color: color.withOpacity(0.2), //bikin pudar
-                    borderRadius: BorderRadius.circular(10)
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.black.withOpacity(0.1), // Set border color to black
+                      width: 1, // Set border width
+                ),
 
         ),
         child: Padding(
