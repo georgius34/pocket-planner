@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class _DateInputRow extends StatefulWidget {
   final String label;
@@ -90,10 +91,14 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
   final TextEditingController _bungaController = TextEditingController(); // New field for bunga (interest rate)
 
   final DateFormat formatter = DateFormat('dd/MM/yyyy');
+  var uid = Uuid(); // Buat instance dari UUID
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Generate UUID versi 4
+      var id = uid.v4();
 
       // Calculate progress based on targetAmount and other factors
       double targetAmount = double.parse(_targetAmountController.text);
@@ -105,7 +110,8 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
         final deadline = endDate.difference(DateTime.now()).inDays; // inisialisasi deadline
 
 
-      await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').add({
+      await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(id).set({
+        'id': id,
         'title': _titleController.text,
         'targetAmount': targetAmount,
         'currentAmount': currentAmount,
@@ -114,7 +120,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
         'endDate': _endDateController.text, // Save end date to Firestore
         'deadline': deadline, // Save deadline to Firestore
         'description': _descriptionController.text,
-        'bunga': _bungaController.text.isEmpty ? null : double.parse(_bungaController.text), // Save bunga if provided, otherwise save null
+        'bunga': _bungaController.text.isEmpty ? 0 : double.parse(_bungaController.text), // Save bunga if provided, otherwise save null
       });
 
       Navigator.pop(context);
@@ -126,6 +132,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
     return Scaffold(
       backgroundColor: Colors.green.shade900,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white), // Mengatur warna ikon back button
         backgroundColor: Colors.green.shade900,
         title: Text(
           'Tambah Rencana Tabungan',

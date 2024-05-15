@@ -3,11 +3,13 @@ import 'package:pocket_planner/screen/home_screen.dart';
 import 'package:pocket_planner/screen/rencana_tabungan_screen.dart';
 import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
+// ignore_for_file: use_super_parameters
 
 class Dashboard extends StatefulWidget {
   final String userId; // Add userId as a parameter
+  final int initialIndex; // Add initialIndex as a parameter
 
-  const Dashboard({Key? key, required this.userId}) : super(key: key);
+  const Dashboard({Key? key, required this.userId, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -21,7 +23,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    // Initialize pageViewList with HomeScreen and TransactionScreen widgets
+    currentIndex = widget.initialIndex; // Gunakan nilai initialIndex yang diteruskan
+    // Initialize pageViewList with HomeScreen and RencanaTabunganScreen widgets
     pageViewList = [
       HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
       RencanaTabunganScreen(userId: widget.userId),
@@ -31,12 +34,14 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NavBar(selectedIndex: currentIndex,
-      onDestinationSelected: (int value) { 
-        setState(() {
-          currentIndex = value;
-        });
-       },),
+      bottomNavigationBar: NavBar(
+        selectedIndex: currentIndex,
+        onDestinationSelected: (int value) {
+          setState(() {
+            currentIndex = value;
+          });
+        },
+      ),
 
       body: pageViewList[currentIndex],
     );

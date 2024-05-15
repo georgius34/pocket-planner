@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       },
 
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade600),
         useMaterial3: true,
       ),
         home: SplashScreen(userId: userId), // Pass the userId to HomeScreen

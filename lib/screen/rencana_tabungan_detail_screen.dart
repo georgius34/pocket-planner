@@ -1,189 +1,250 @@
-import 'dart:math' as math;
+// ignore_for_file: prefer_const_constructors
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:pocket_planner/screen/dashboard.dart';
+import 'package:pocket_planner/widgets/add_progress.dart';
 
 class RencanaTabunganDetailScreen extends StatelessWidget {
-  final String title;
-  final double targetAmount;
-  final double currentAmount;
-  final String startDate;
-  final String description;
-  final int    deadline;
-  final double progress; // Add progress as a parameter
+  final String userId;
+  final dynamic rencanaData;
 
-  const RencanaTabunganDetailScreen({
-    required this.title,
-    required this.targetAmount,
-    required this.currentAmount,
-    required this.startDate,
-    required this.description,
-    required this.deadline,
-    required this.progress,
+   RencanaTabunganDetailScreen({
+    required this.userId,
+    required this.rencanaData,
   });
+
+Future<String> _getRencanaTabunganId() async {
+  // Mengambil ID dari rencana tabungan dari rencanaData
+  String rencanaTabunganId = rencanaData['id'];
+  
+  // Mengembalikan ID rencana tabungan
+  return rencanaTabunganId;
+}
+
+void _deleteTransaction(BuildContext context) async {
+  try {
+    // Mendapatkan ID rencana tabungan sesuai dengan indeks yang diklik
+
+    // Menghapus transaksi dari database
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection("rencanaTabungan")
+        .doc(rencanaData['id'])
+        .delete();
+
+    // Kembali ke halaman dashboard dan pilih pilihan kedua pada NavBar
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Dashboard(userId: userId),
+      ),
+      (route) => false, // Menghapus semua halaman sebelumnya dari tumpukan navigasi
+    ).then((_) {
+      // Setelah halaman Dashboard dimuat, kita akan memilih pilihan kedua pada NavBar
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Dashboard(
+            userId: userId,
+            initialIndex: 1, // Memilih pilihan kedua pada NavBar
+          ),
+        ),
+      );
+    });
+  } catch (e) {
+    // Menampilkan pesan error
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to delete transaction')),
+    );
+  }
+}
+
+void _showDeleteConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Delete Transaction'),
+        content: Text('Are you sure you want to delete this transaction?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(), // Close dialog
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () => _deleteTransaction(context), // Pass index to _deleteTransaction
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
+    final String title = rencanaData['title'];
+    final double targetAmount = rencanaData['targetAmount'];
+    final double currentAmount = rencanaData['currentAmount'];
+    final String startDate = rencanaData['startDate'];
+    final String endDate = rencanaData['endDate'];
+    final String description = rencanaData['description'];
+    final int deadline = rencanaData['deadline'];
+    final double progress = rencanaData['progress'];
+    final double bunga = rencanaData['bunga'];
+
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Rencana Tabungan Detail'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Custom Paint for semi-circle progress display
-               SizedBox(
-                  width: 340,
-                  height: 210,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 140), // Atur jarak ke atas
-                    child: CustomPaint(
-                      painter: ProgressPainter(
-                        progress: progress,
-                        targetAmount: targetAmount,
-                        currentAmount: currentAmount,
+          appBar: AppBar(
+            title: Text(
+              'Detail',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+              ),
+            ),
+            backgroundColor: Colors.green.shade900,
+            iconTheme: IconThemeData(color: Colors.white), // Mengatur warna ikon back button
+            actions: [
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _showDeleteConfirmationDialog(context),
+              ),
+            ],
+          ),
+      body: SingleChildScrollView(
+        child: Container(
+              decoration: BoxDecoration(
+                // color: Colors.green.shade900, // Set opacity to achieve the blurred effect
+              ),
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // CircularProgressIndicator for semi-circle progress display
+               Container(
+                  width: double.infinity,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.black.withOpacity(0.2),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 10),
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 1.0,
+                        spreadRadius: 1.5,
                       ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    ],
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LinearProgressIndicator(
+                        value: progress / 100,
+                        backgroundColor: Colors.grey.shade300,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade600),
+                        minHeight: 30,
+                        semanticsLabel: 'Progress Indicator',
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                      child: SizedBox(
+                        width: 400,
+                        height: 30,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Transform.translate(
-                              offset: Offset(0, -60), // Pindahkan teks ke atas
-                              child: Text(
-                                'Total Tabungan',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black54,
-                                ),
+                            Text(
+                              'Total Tabungan',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade600,
                               ),
                             ),
-                            Transform.translate(
-                              offset: Offset(0, -50),
-                              child: Text(
-                                'Rp ${currentAmount.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Rp ${currentAmount.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-              SizedBox(height: 20),
-                  Container(
-                      width: 400,
-                        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Atur padding secara simetris
-                       decoration: BoxDecoration(
-                          color: Colors.white, // Ubah warna latar belakang menjadi putih
-                          borderRadius: BorderRadius.circular(10),
-                           border: Border.all(
-                              color: Colors.black.withOpacity(0.2), // Set border color to black
-                              width: 1, // Set border width
-                            ), // Tambahkan garis tepi hitam
-                          boxShadow: [
-                            BoxShadow(
-                              offset: Offset(0, 10),
-                              color: Colors.grey.withOpacity(0.1),
-                              blurRadius: 1.0,
-                              spreadRadius: 1.5,
-                            ),
-                          ],
-                        ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ],
+            ),
+          ),
+                SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.black.withOpacity(0.2),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 10),
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 1.0,
+                        spreadRadius: 1.5,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Left data
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Left data
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      size: 30,
-                                      color: Colors.green.shade600,
-                                    ),
-                                    SizedBox(width: 5), // Jarak antara ikon dan teks
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Tenggat Waktu',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.grey,
-                                            letterSpacing: 1.2,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${deadline} hari',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                           Spacer(),
-                           Center(
-                             child: Padding(
-                               padding: const EdgeInsets.only(right: 30),
-                               child: Container(
-                                  height: 30,
-                                  child: VerticalDivider(
-                                    color: Colors.grey.shade500,
-                                    thickness: 1,
-                                  ),
-                                ),
-                             ),
-                           ),
-                            Spacer(),
-                          // Right data (Progress)
-                         Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                          Row(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                              Icon(
+                                Icons.access_time,
+                                size: 30,
+                                color: Colors.green.shade600,
+                              ),
+                              SizedBox(width: 5),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    Icons.check_circle_outline, // Ganti dengan ikon progress yang diinginkan
-                                    size: 30,
-                                    color: Colors.green.shade600,
+                                  Text(
+                                    'Tenggat Waktu',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                      letterSpacing: 1.2,
+                                    ),
                                   ),
-                                  SizedBox(width: 5), // Jarak antara ikon dan teks
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Progress',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w500,
-                                          letterSpacing: 1.2,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${progress}%',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                                  Text(
+                                    '${deadline} hari',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -191,78 +252,155 @@ class RencanaTabunganDetailScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 10),
-              Text(
-                '${(progress).toInt()}%',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  wordSpacing: 10,
+                      Spacer(),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 30),
+                          child: Container(
+                            height: 30,
+                            child: VerticalDivider(
+                              color: Colors.grey.shade500,
+                              thickness: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      // Right data (Progress)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.stacked_line_chart_outlined,
+                                size: 30,
+                                color: Colors.green.shade600,
+                              ),
+                              SizedBox(width: 5),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Progress',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${progress.toStringAsFixed(2)}%',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Title: $title',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text('Target Amount: Rp ${targetAmount.toStringAsFixed(2)}'),
-              SizedBox(height: 8),
-              Text('Start Date: $startDate'),
-              SizedBox(height: 8),
-              Text('Description: $description'),
-            ],
+                SizedBox(height: 20),
+
+                // Add "Detail Data" Text and "Add Progress" Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Detail Rencana',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                        color: Colors.green.shade900,
+                      ),
+                    ),
+            ElevatedButton(
+                  onPressed: () async {
+                    String rencanaTabunganId = await _getRencanaTabunganId();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddProgressPopUp(
+                              rencanaTabunganId: rencanaTabunganId,
+                              rencanaData: rencanaData, // Tambahkan nilai totalAmount
+                              userId: userId,
+                        );
+                      },
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Ubah warna latar belakang tombol di sini
+                  ),
+                  child: Text('Add Tabungan'),
+                ),
+                  ],
+                ),
+                SizedBox(height: 10), // Add some spacing between the row and the detail boxes
+
+                // Additional Information
+                _buildDetailBox('Title', title),
+                _buildDetailBox('Target Amount', 'Rp ${targetAmount.toStringAsFixed(2)}'),
+                _buildDetailBox('Current Amount', 'Rp ${currentAmount.toStringAsFixed(2)}'),
+                _buildDetailBox('Start Date', startDate),
+                _buildDetailBox('End Date', endDate), // Display end date
+                _buildDetailBox('Description', description),
+                _buildDetailBox('Bunga', bunga.toStringAsFixed(2)), // Display bunga
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
 
-class ProgressPainter extends CustomPainter {
-   final double progress;
-  final double targetAmount;
-  final double currentAmount;
-
-  ProgressPainter({
-    required this.progress,
-    required this.targetAmount,
-    required this.currentAmount,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint progressPaint = Paint()
-      ..color = Colors.green.shade600
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 20;
-
-    final Paint backgroundPaint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 20;
-
-    double progress = (currentAmount / targetAmount) * 100;
-
-    final double halfWidth = size.width / 2;
-    final double halfHeight = size.height / 2;
-
-    final double startAngle = -math.pi; // Dimulai dari kiri
-    final double sweepAngle = math.pi * progress / 100;
-    final double sweepAngleBack = math.pi * 100 / 100;
-    final Rect rect = Rect.fromCircle(center: Offset(halfWidth, halfHeight), radius: halfWidth);
-
-    canvas.drawArc(rect, startAngle, sweepAngleBack, false, backgroundPaint);
-    canvas.drawArc(rect, startAngle, sweepAngle, false, progressPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  Widget _buildDetailBox(String label, String $value) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4.0), // Reduced vertical margin
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0), // Reduced padding to make the box smaller
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(0, 2), // Adjusted offset to reduce shadow height
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 1.0,
+            spreadRadius: 1.5,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label:',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14, // Adjusted font size
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.1,
+            ),
+          ),
+          SizedBox(height: 4.0), // Added space between label and text
+          Text(
+            $value,
+            style: TextStyle(fontSize: 16, color: Colors.black), // Adjusted font size
+          ),
+        ],
+      ),
+    );
   }
 }
-

@@ -1,49 +1,39 @@
-  import 'package:flutter/material.dart';
-  import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class RencanaTabunganCard extends StatelessWidget {
-  final String title;
-  final double targetAmount;
-  final double currentAmount;
-  final int deadline;
-  final String description;
-  final double progress; // Add progress as a parameter
+  final dynamic rencanaData;
 
-  const RencanaTabunganCard({
-    required this.title,
-    required this.targetAmount,
-    required this.currentAmount,
-    required this.description,
-    required this.deadline,
-    required this.progress, // Initialize progress
-  });
+  const RencanaTabunganCard({required this.rencanaData});
 
   @override
   Widget build(BuildContext context) {
-
-  double progress = (currentAmount / targetAmount) * 100;
+    final String title = rencanaData['title'];
+    final double targetAmount = rencanaData['targetAmount'];
+    final String description = rencanaData['description'];
+    final int deadline = rencanaData['deadline'];
+    final double progress = rencanaData['progress'];
 
     return Container(
-      width: double.infinity, // Ensure the card takes up full width
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white, // Set background color to white
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: Colors.black.withOpacity(0.2), // Set border color to black
-          width: 1, // Set border width
+          color: Colors.black.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
+            offset: Offset(0, 3),
           ),
         ],
       ),
-      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 20), // Adjust margin
+      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 20),
       child: Padding(
-        padding: const EdgeInsets.all(12.0), // Adjust padding
+        padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
             Expanded(
@@ -51,36 +41,35 @@ class RencanaTabunganCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    '$title',
                     style: TextStyle(
-                      fontSize: 16, // Adjust font size
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black
+                      color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 2), // Adjust spacing
+                  SizedBox(height: 2),
                   Text(
                     'Rp ${targetAmount.toStringAsFixed(2)}',
                     style: TextStyle(
-                      fontSize: 14, // Adjust font size
-                      color: Colors.grey.shade600
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(height: 2), // Adjust spacing
+                  SizedBox(height: 2),
                   Text(
-                    '$deadline hari lagi',
+                    '${deadline} hari lagi',
                     style: TextStyle(
-                      fontSize: 14, // Adjust font size
-                      color: Colors.grey.shade600
-                      // color: Colors.grey,
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(height: 2), // Adjust spacing
+                  SizedBox(height: 2),
                   Text(
-                    description,
+                    '${description}',
                     style: TextStyle(
-                      fontSize: 12, // Adjust font size
-                      color: Colors.grey.shade600
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
@@ -93,19 +82,19 @@ class RencanaTabunganCard extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      height: 40, // Adjust the size of the circular progress indicator
-                      width: 40, // Adjust the size of the circular progress indicator
+                      height: 40,
+                      width: 40,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2, // Adjust thickness of the progress indicator
-                        value: progress / 100, // Set progress value
-                        backgroundColor: Colors.grey[300], // Background color
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green), // Progress color
+                        strokeWidth: 2,
+                        value: progress / 100,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                       ),
                     ),
                     Text(
-                      '${(progress).toInt()}%', // Display progress percentage
+                      '${(progress).toInt()}%',
                       style: TextStyle(
-                        fontSize: 10, // Adjust font size
+                        fontSize: 10,
                         color: Colors.grey,
                       ),
                     ),
@@ -119,4 +108,3 @@ class RencanaTabunganCard extends StatelessWidget {
     );
   }
 }
-

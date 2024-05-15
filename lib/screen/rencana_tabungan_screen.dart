@@ -4,32 +4,10 @@ import 'package:pocket_planner/screen/rencana_tabungan_detail_screen.dart';
 import 'package:pocket_planner/widgets/add_rencana_tabungan.dart';
 import 'package:pocket_planner/widgets/rencana_tabungan_card.dart';
 
-class RencanaTabungan {
-  final String title;
-  final double targetAmount;
-  final double currentAmount;
-  final int    deadline;
-  final String startDate;
-  final String endDate;
-  final String description;
-  final double progress; // Field untuk menyimpan kemajuan dalam persentase
-
-  RencanaTabungan({
-    required this.title,
-    required this.targetAmount,
-    required this.startDate,
-    required this.endDate,
-    required this.description,
-    required this.currentAmount,
-    required this.deadline,
-    required this.progress,
-  });
-}
-
 class RencanaTabunganScreen extends StatelessWidget {
   final String userId;
 
-  RencanaTabunganScreen({required this.userId});
+  RencanaTabunganScreen({required this.userId, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +79,7 @@ class RencanaTabunganScreen extends StatelessWidget {
                         .collection('users')
                         .doc(userId)
                         .collection('rencanaTabungan')
+                        .limit(10)
                         .snapshots(),
                     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasError) {
@@ -111,55 +90,33 @@ class RencanaTabunganScreen extends StatelessWidget {
                         return Center(child: CircularProgressIndicator());
                       }
 
-                      final data = snapshot.data!.docs.map((doc) {
-                        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                        return RencanaTabungan(
-                          title: data['title'],
-                          targetAmount: data['targetAmount'],
-                          currentAmount: data['currentAmount'],
-                          deadline: data['deadline'],
-                          startDate: data['startDate'],
-                          endDate: data['endDate'],
-                          description: data['description'],
-                          progress: data['progress'],
-                        );
-                      }).toList();
+                     var data = snapshot.data!.docs;
 
-                      return ListView.builder(
-                        itemCount: data.length,
-                        itemBuilder: (context, index) {
-                          final rencana = data[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RencanaTabunganDetailScreen(
-                                    title: rencana.title,
-                                    targetAmount: rencana.targetAmount,
-                                    currentAmount: rencana.currentAmount,
-                                    deadline: rencana.deadline,
-                                    startDate: rencana.startDate,
-                                    description: rencana.description,
-                                    progress: rencana.progress,
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: data.length,
+                      physics: ScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        var rencana = data[index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                 builder: (context) => RencanaTabunganDetailScreen(
+                                    userId: userId,
+                                    rencanaData: rencana.data(), // Pass rencana object here
                                   ),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: RencanaTabunganCard(
-                                title: rencana.title,
-                                targetAmount: rencana.targetAmount,
-                                currentAmount: rencana.currentAmount,
-                                deadline: rencana.deadline,
-                                description: rencana.description,
-                                progress: rencana.progress,
                               ),
+                            );
+                          },
+                           child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: RencanaTabunganCard(rencanaData: rencana), // Pass rencana object to card
                             ),
-                          );
-                        },
-                      );
+                        );
+                      },
+                    );
                     },
                   ),
                 ),
