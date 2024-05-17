@@ -130,10 +130,10 @@ class CardOne extends StatelessWidget {
               children: [
                 Text(
                   heading,
-                   style: TextStyle(color: color, fontSize: 14)),
+                   style: TextStyle(color: color, fontSize: 13)),
                 Text(
                   "Rp ${amount}",
-                  style: TextStyle(color: color, fontSize: 30, fontWeight: FontWeight.bold))
+                  style: TextStyle(color: color, fontSize: 28, fontWeight: FontWeight.bold))
                   ],
               ),
               Spacer(),

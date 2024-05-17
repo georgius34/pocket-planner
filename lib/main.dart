@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pocket_planner/screen/splash_screen.dart';
 
 Future<void> main() async {
-//   await Firebase.initializeApp(
-//   options: DefaultFirebaseOptions.currentPlatform,
-// );
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
   // Create an instance of your Db class
   // Db db = Db();
 
@@ -16,12 +17,12 @@ Future<void> main() async {
   String userId = '354eb982-3ee2-429b-9cb7-6e1d8fb336e7';
 
   // Pass the generated user ID to the MyApp widget
-  // runApp(MyApp(userId: userId));
+  runApp(MyApp(userId: userId));
 }
 
 class MyApp extends StatelessWidget {
-  // final String userId;
-  // const MyApp({Key? key, required this.userId}) : super(key: key);
+  final String userId;
+  const MyApp({Key? key, required this.userId}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade600),
         useMaterial3: true,
       ),
-        // home: SplashScreen(userId: userId), // Pass the userId to HomeScreen
+        home: SplashScreen(userId: userId), // Pass the userId to HomeScreen
 
     );
   }

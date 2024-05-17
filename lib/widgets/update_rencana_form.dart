@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 class _DropdownInputRow extends StatelessWidget {
   final String label;
@@ -60,16 +59,20 @@ class _DropdownInputRow extends StatelessWidget {
 }
 
 
-class AddRencanaTabunganForm extends StatefulWidget {
+class UpdateRencanaTabunganForm extends StatefulWidget {
   final String userId;
+  final dynamic rencanaData;
 
-  AddRencanaTabunganForm({required this.userId});
+  UpdateRencanaTabunganForm({
+    required this.userId,
+    required this.rencanaData, required String rencanaTabunganId, required void Function(double newAmount) refreshData,
+  });
 
   @override
-  _AddRencanaTabunganFormState createState() => _AddRencanaTabunganFormState();
+  _UpdateRencanaTabunganFormState createState() => _UpdateRencanaTabunganFormState();
 }
 
-class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
+class _UpdateRencanaTabunganFormState extends State<UpdateRencanaTabunganForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -78,22 +81,27 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
   final TextEditingController _bungaController = TextEditingController(); // New field for bunga (interest rate)
   int? _selectedPeriode;
 
-  final DateFormat formatter = DateFormat('dd/MM/yyyy');
-  var uid = Uuid(); // Buat instance dari UUID
+  late dynamic _rencanaData;
+
+  @override
+  void initState() {
+    super.initState();
+    _rencanaData = widget.rencanaData;
+
+    _titleController.text = _rencanaData['title'];
+    _targetAmountController.text = _rencanaData['targetAmount'].toString();
+    _descriptionController.text = _rencanaData['description'];
+    _bungaController.text = _rencanaData['bunga'].toString();
+    _selectedPeriode = _rencanaData['periode'];
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Generate UUID versi 4
-      var id = uid.v4();
-
-      // Calculate progress based on targetAmount and other factors
+      final DateFormat formatter = DateFormat('dd/MM/yyyy');
       double targetAmount = double.parse(_targetAmountController.text);
-      double progress = 0; // default progress 0
-      double currentAmount = 0; // default progress 0
       int bunga = _bungaController.text.isEmpty ? 0 : int.parse(_bungaController.text);
-      int periode = _selectedPeriode ?? 1; // Default periode to 1 if not selected
+      int periode = _selectedPeriode ?? 1;
 
       // Calculate start and end dates
       final startDate = DateTime.now(); // Start date is today's date
@@ -109,19 +117,15 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       }
       tabunganBulanan = double.parse(tabunganBulanan.toStringAsFixed(2));
 
-      await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(id).set({
-        'id': id,
+      await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(_rencanaData['id']).update({
         'title': _titleController.text,
         'targetAmount': targetAmount,
-        'currentAmount': currentAmount,
-        'progress': progress,
-        'startDate': formatter.format(startDate),
-        'endDate': formatter.format(endDate), // Save calculated end date to Firestore
-        'deadline': deadline, // Save deadline to Firestore
         'description': _descriptionController.text,
-        'bunga': bunga, // Save bunga if provided, otherwise save 0
-        'periode': periode, // Save selected period to Firestore
-        'tabunganBulanan': tabunganBulanan, // Save calculated tabungan bulanan to Firestore
+        'bunga': bunga,
+        'periode': periode,
+        'endDate': formatter.format(endDate), // Update end date in Firestore
+        'deadline': deadline, // Update deadline in Firestore
+        'tabunganBulanan': tabunganBulanan, // Update tabungan bulanan in Firestore
       });
 
       Navigator.pop(context);
@@ -136,7 +140,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
         iconTheme: IconThemeData(color: Colors.white), // Mengatur warna ikon back button
         backgroundColor: Colors.green.shade900,
         title: Text(
-          'Tambah Rencana Tabungan',
+          'Update Rencana Tabungan',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
       ),
@@ -169,7 +173,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('Submit', style: TextStyle(color: Colors.green.shade600)),
+                child: Text('Update', style: TextStyle(color: Colors.green.shade600)),
               ),
             ],
           ),
@@ -190,7 +194,8 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
         TextFormField(
           controller: controller,
           keyboardType: label == 'Target Amount' || label == 'Bunga (Optional)' ? TextInputType.number : TextInputType.text,
-          style: TextStyle(color: Colors.green.shade600, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+          style: TextStyle(color: Colors.green.shade600, fontWeight:
+FontWeight.w600, wordSpacing: 1.5),
           decoration: InputDecoration(
             fillColor: Colors.white,
             filled: true,

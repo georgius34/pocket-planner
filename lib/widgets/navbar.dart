@@ -17,14 +17,16 @@ class NavBar extends StatelessWidget {
           NavigationDestination(
             icon: Icon(
               Icons.home,
-              color: Colors.green
+              color: Colors.green,
+              size: 30,
               ),
             label: 'Dashboard',
           ),
           NavigationDestination(
             icon: Icon(
               Icons.savings,
-              color: Colors.green
+              color: Colors.green,
+              size: 30,
               ),
             label: 'Rencana Tabungan',
           ),

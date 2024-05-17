@@ -26,12 +26,6 @@ class SplashScreenState extends State<SplashScreen>
     });
   }
 
-    @override
-    void dispose(){
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-    overlays: SystemUiOverlay.values);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

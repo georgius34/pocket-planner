@@ -1,47 +1,43 @@
-  import 'package:cloud_firestore/cloud_firestore.dart';
-  import 'package:flutter/material.dart';
-  import 'package:intl/intl.dart';
-  import 'package:pocket_planner/utils/appvalidators.dart';
-  import 'package:pocket_planner/widgets/category_dropdown.dart';
-  import 'package:uuid/uuid.dart';
-  //ignore_for_file: prefer_const_constructors
-  //ignore_for_file: prefer_const_literals_to_create_immutables
-  //ignore_for_file: sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 
-  class AddTransactionForm extends StatefulWidget {
-    final String userId; // Add userId as a parameter
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:pocket_planner/utils/appvalidators.dart';
+import 'package:pocket_planner/widgets/category_dropdown.dart';
+import 'package:uuid/uuid.dart';
 
-    const AddTransactionForm({Key? key, required this.userId}) : super(key: key); // Add userId to the constructor
+class AddTransactionForm extends StatefulWidget {
+  final String userId;
 
-    @override
-    State<AddTransactionForm> createState() => _AddTransactionFormState();
-  }
+  const AddTransactionForm({Key? key, required this.userId}) : super(key: key);
 
-  class _AddTransactionFormState extends State<AddTransactionForm> {
-    var type = "credit";
-    var category = "Grocery";
+  @override
+  State<AddTransactionForm> createState() => _AddTransactionFormState();
+}
 
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    var isLoader = false;
-    var appValidator = AppValidator();
-    var amountEditController = TextEditingController();
-    var titleEditController = TextEditingController();
-    var uid = Uuid(); 
+class _AddTransactionFormState extends State<AddTransactionForm> {
+  var type = "credit";
+  var category = "Grocery";
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var isLoader = false;
+  var appValidator = AppValidator();
+  var amountEditController = TextEditingController();
+  var titleEditController = TextEditingController();
+  var uid = Uuid();
 
   Future<void> _submitForm(String userId) async {
-
-    if(_formKey.currentState!.validate()){
+    if (_formKey.currentState!.validate()) {
       setState(() {
         isLoader = true;
       });
 
-      // Retrieve the user document using the provided userId
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userId)
           .get();
 
-      // Ensure the user document exists
       if (userDoc.exists) {
         int timestamp = DateTime.now().millisecondsSinceEpoch;
         var amount = int.parse(amountEditController.text);
@@ -58,11 +54,10 @@
           remainingAmount += amount;
           totalCredit += amount;
         } else {
-          remainingAmount -= amount; // subtract amount for debit
+          remainingAmount -= amount;
           totalDebit += amount;
         }
 
-        // Update the user document with the new values
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -73,7 +68,7 @@
           "updatedAt": timestamp,
         });
 
-        var data ={
+        var data = {
           "id": id,
           "title": titleEditController.text,
           "amount": amount,
@@ -86,7 +81,6 @@
           "category": category
         };
 
-        // Add the transaction document under the user's transactions collection
         await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userId)
@@ -94,81 +88,180 @@
             .doc(id)
             .set(data);
 
-        // Close the form after submitting
-        Navigator.pop(context);
+        amountEditController.clear();
+        titleEditController.clear();
 
         setState(() {
           isLoader = false;
         });
+
+        Navigator.pop(context);
       }
     }
   }
 
-
-    @override
-    Widget build(BuildContext context) {
-      return SingleChildScrollView(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.green.shade900,
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.green.shade900,
+        title: Text(
+          'Tambah Transaksi',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Form(
-          key:  _formKey,
-          // ini isi formny
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField( //klo mw nambah add more text form field
-                controller: titleEditController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.isEmptyCheck,
-                decoration: InputDecoration(labelText: 'Title'),
-              ),
-              TextFormField(
-                controller: amountEditController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.isEmptyCheck,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Amount'),
-              ),
-              CategoryDropDown(
-                cattype: category,
-                
-                onChanged: (String? value) {
-                  if(value !=null){
-                    setState(() {
-                      category = value;
-                    });
+              _buildInputRow('Title', Icons.title, titleEditController),
+              SizedBox(height: 10),
+              _buildInputRow('Amount', Icons.monetization_on, amountEditController),
+              SizedBox(height: 10),
+              _buildCategoryDropDownInput('Category', Icons.category),
+              SizedBox(height: 10),
+              _buildTypeDropDownInput('type'),
+              SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: () {
+                  if (!isLoader) {
+                    _submitForm(widget.userId);
                   }
-                  },),
-              DropdownButtonFormField(
-                value: 'credit', 
-                items: [
-                DropdownMenuItem(child: Text('Credit'), value: 'credit',),
-                DropdownMenuItem(child: Text('Debit'), value: 'debit',),
-              ],
-              onChanged: (value){
-                if (value != null){
-                  setState(() {
-                    type = value;
-                  });
-                }
-              }),
-            
-            SizedBox(
-              height: 15,
-            ),
-            ElevatedButton(
-              onPressed: () {
-              if(isLoader == false){
-              _submitForm(widget.userId);
-              }
-            },
-            child: 
-            isLoader ? Center(child: CircularProgressIndicator()):
-            Text("Tambah Transaksi",
-            style: TextStyle(color: Colors.green),
+                },
+                child: isLoader
+                    ? Center(child: CircularProgressIndicator())
+                    : Text(
+                        "Tambah Transaksi",
+                        style: TextStyle(color: Colors.green),
+                      ),
               ),
-            )
             ],
-          )
+          ),
         ),
-      );
-    }
+      ),
+    );
   }
+
+  Widget _buildInputRow(String label, IconData icon, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+        ),
+        SizedBox(height: 2), // Adjust vertical spacing
+        TextFormField(
+          controller: controller,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: appValidator.isEmptyCheck,
+          keyboardType: label == 'Amount' ? TextInputType.number : TextInputType.text,
+          style: TextStyle(color: Colors.green.shade600, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+          decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            prefixIcon: Icon(icon, color: Colors.green.shade600),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Fungsi untuk membangun dropdown input kategori
+  Widget _buildCategoryDropDownInput(String label, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+        ),
+        CategoryDropDown(
+          cattype: category,
+          onChanged: (String? value) {
+            if (value != null) {
+              setState(() {
+                category = value;
+              });
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  // Fungsi untuk membangun dropdown input kategori
+ Widget _buildTypeDropDownInput(String label) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+      ),
+      SizedBox(height: 2), // Adjust vertical spacing
+      SizedBox(
+        height: 60, // Adjust height
+        child: DropdownButtonFormField(
+          value: 'credit',
+          items: [
+            DropdownMenuItem(
+              child: Row(
+                children: [
+                  Icon(Icons.credit_card, color: Colors.green), // Icon untuk Credit
+                  SizedBox(width: 10),
+                  Text('Credit', style: TextStyle(color: Colors.green)), // Ubah warna teks untuk opsi Credit
+                ],
+              ),
+              value: 'credit',
+            ),
+            DropdownMenuItem(
+              child: Row(
+                children: [
+                  Icon(Icons.money_off, color: Colors.red), // Icon untuk Debit
+                  SizedBox(width: 10),
+                  Text('Debit', style: TextStyle(color: Colors.red)), // Ubah warna teks untuk opsi Debit
+                ],
+              ),
+              value: 'debit',
+            ),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                type = value;
+              });
+            }
+          },
+          decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+}

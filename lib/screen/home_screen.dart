@@ -31,9 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
             floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.green.shade900,
+              backgroundColor: Colors.green.shade600,
               onPressed: ((){
-                _dialogBuilder(context);
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddTransactionForm(userId: widget.userId),
+                  ),
+                );
               }),
               child: Icon(Icons.add, color: Colors.white),
             ),

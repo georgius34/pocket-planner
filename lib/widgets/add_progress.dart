@@ -5,11 +5,14 @@ class AddProgressPopUp extends StatefulWidget {
   final String userId;
   final dynamic rencanaData;
   final String rencanaTabunganId;
+  final Function(double) refreshData;
 
   const AddProgressPopUp({
     Key? key,
     required this.userId,
-    required this.rencanaData, required this.rencanaTabunganId,
+    required this.rencanaData,
+    required this.rencanaTabunganId,
+    required this.refreshData,
   }) : super(key: key);
 
   @override
@@ -19,6 +22,7 @@ class AddProgressPopUp extends StatefulWidget {
 class _AddProgressPopUpState extends State<AddProgressPopUp> {
   final TextEditingController _amountController = TextEditingController();
   bool _isLoading = false;
+  String? _amountError;
 
   @override
   void dispose() {
@@ -32,30 +36,35 @@ class _AddProgressPopUpState extends State<AddProgressPopUp> {
     });
 
     try {
-      double newProgress =
-          (newAmount / widget.rencanaData['targetAmount']) * 100; // Adjusted calculation
+      double targetAmount = widget.rencanaData['targetAmount'];
+      double currentAmount = widget.rencanaData['currentAmount'] ?? 0;
+      
+      // Calculate remaining amount needed to reach target
+      double remainingAmount = targetAmount - currentAmount;
+
+      double inputAmount = double.tryParse(_amountController.text) ?? 0;
+      
+      // If input amount exceeds remaining amount, adjust it
+      if (inputAmount > remainingAmount) {
+        inputAmount = remainingAmount;
+        _amountController.text = inputAmount.toString();
+      }
+
+      double newProgress = ((currentAmount + inputAmount) / targetAmount) * 100;
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userId)
           .collection('rencanaTabungan')
           .doc(widget.rencanaTabunganId)
           .update({
-        'currentAmount': newAmount,
+        'currentAmount': currentAmount + inputAmount,
         'progress': newProgress,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Progress added successfully!'),
-        ),
-      );
-      Navigator.pop(context, newAmount);
+      widget.refreshData(currentAmount + inputAmount);
+      Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update progress: $e'),
-        ),
-      );
+      print('Failed to update progress: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -66,7 +75,7 @@ class _AddProgressPopUpState extends State<AddProgressPopUp> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Tabungan'),
+      title: Text('Tambah Tabungan'),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -78,8 +87,21 @@ class _AddProgressPopUpState extends State<AddProgressPopUp> {
             TextFormField(
               controller: _amountController,
               keyboardType: TextInputType.number,
+              onChanged: (value) {
+                setState(() {
+                  if (value.isEmpty) {
+                    _amountError = 'Jumlah Tabungan tidak boleh kosong';
+                  } else {
+                    _amountError = (double.tryParse(value) ?? 0) <= 0
+                        ? 'Masukan Jumlah Tabungan yang Valid'
+                        : null;
+                  }
+                });
+              },
               decoration: InputDecoration(
                 labelText: 'Jumlah Tabungan',
+                errorText: _amountError,
+                errorStyle: TextStyle(color: Colors.red),
               ),
               style: TextStyle(fontSize: 16.0),
             ),
@@ -91,7 +113,7 @@ class _AddProgressPopUpState extends State<AddProgressPopUp> {
           children: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: Text(
                 'Cancel',
@@ -100,19 +122,13 @@ class _AddProgressPopUpState extends State<AddProgressPopUp> {
             ),
             TextButton(
               onPressed: () {
-                double amount =
-                    double.tryParse(_amountController.text) ?? 0;
+                double amount = double.tryParse(_amountController.text) ?? 0;
                 if (amount > 0) {
-                  double currentAmount = widget.rencanaData['currentAmount'] ??
-                      0; // Adjusted currentAmount
-                  double newAmount = currentAmount + amount;
-                  _updateCurrentAmount(newAmount);
+                  _updateCurrentAmount(amount);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Please enter a valid progress amount.'),
-                    ),
-                  );
+                  setState(() {
+                    _amountError = 'Masukan Jumlah Tabungan yang Valid';
+                  });
                 }
               },
               child: _isLoading
