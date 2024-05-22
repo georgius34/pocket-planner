@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/screen/home_screen.dart';
+import 'package:pocket_planner/screen/transaction_screen.dart';
+import 'package:pocket_planner/screen/laporan_keuangan_screen.dart';
 import 'package:pocket_planner/screen/rencana_tabungan_screen.dart';
 import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
@@ -27,6 +28,7 @@ class _DashboardState extends State<Dashboard> {
     // Initialize pageViewList with HomeScreen and RencanaTabunganScreen widgets
     pageViewList = [
       HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
+      LaporanKeuanganScreen(userId: widget.userId),
       RencanaTabunganScreen(userId: widget.userId),
     ];
   }

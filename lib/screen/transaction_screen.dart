@@ -44,10 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             appBar: AppBar(
               backgroundColor: Colors.green.shade900,
-              title: Text(
-                'Dashboard',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
-              ),
+              // title: Text(
+              //   'Dashboard',
+              //   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
+              // ),
               
         // actions: [IconButton(onPressed: , icon: )],
       ),

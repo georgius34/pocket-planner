@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_super_parameters, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/screen/rencana_tabungan_detail_screen.dart';
@@ -14,10 +16,10 @@ class RencanaTabunganScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green.shade900,
-        title: Text(
-          'Rencana Tabungan',
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
-        ),
+        // title: Text(
+        //   'Rencana Tabungan',
+        //   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
+        // ),
       ),
       body: Stack(
         children: [

@@ -1,10 +1,9 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors, use_build_context_synchronously, avoid_unnecessary_containers, sized_box_for_whitespace
-
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/screen/dashboard.dart';
 import 'package:pocket_planner/widgets/add_progress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/widgets/update_rencana_form.dart';
+import 'package:intl/intl.dart';
 
 class RencanaTabunganDetailScreen extends StatefulWidget {
   final String userId;
@@ -23,6 +22,7 @@ class RencanaTabunganDetailScreen extends StatefulWidget {
 class _RencanaTabunganDetailScreenState
     extends State<RencanaTabunganDetailScreen> {
   late dynamic _rencanaData;
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
 
   @override
   void initState() {
@@ -176,7 +176,7 @@ class _RencanaTabunganDetailScreenState
                   color: Colors.green.shade900,
                 ),
               ),
-                ElevatedButton(
+              ElevatedButton(
                 onPressed: () async {
                   String rencanaTabunganId = await _getRencanaTabunganId();
                   showDialog(
@@ -201,67 +201,16 @@ class _RencanaTabunganDetailScreenState
           SizedBox(height: 20),
           LinearProgressIndicator(
             value: progress / 100,
+            borderRadius: BorderRadius.circular(20.0),
             backgroundColor: Colors.grey.shade300,
             valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade600),
             minHeight: 30,
             semanticsLabel: 'Progress Indicator',
           ),
           SizedBox(height: 10),
-          Container(
-            child: SizedBox(
-              width: 400,
-              height: 30,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total Tabungan Sekarang',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  Text(
-                    'Rp ${currentAmount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildCurrencyDetailRow('Total Tabungan Sekarang', currentAmount),
           SizedBox(height: 5),
-          Container(
-            child: SizedBox(
-              width: 400,
-              height: 30,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tabungan Bulanan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  Text(
-                    'Rp ${tabunganBulanan.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildCurrencyDetailRow('Tabungan Bulanan', tabunganBulanan),
         ],
       ),
     );
@@ -289,7 +238,8 @@ class _RencanaTabunganDetailScreenState
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment:
+MainAxisAlignment.spaceBetween,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -451,7 +401,7 @@ class _RencanaTabunganDetailScreenState
           SizedBox(height: 20),
           _buildDetailBox('Title', title),
           SizedBox(height: 5),
-          _buildDetailBox('Target Amount', 'Rp ${targetAmount.toStringAsFixed(2)}'),
+          _buildDetailBox('Target Amount', _currencyFormat.format(targetAmount)),
           SizedBox(height: 5),
           _buildDetailBox('Start Date', startDate),
           SizedBox(height: 5),
@@ -509,5 +459,34 @@ class _RencanaTabunganDetailScreenState
       ),
     );
   }
-}
 
+  Widget _buildCurrencyDetailRow(String label, double value) {
+    return Container(
+      child: SizedBox(
+        width: 400,
+        height: 30,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            Text(
+              _currencyFormat.format(value),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

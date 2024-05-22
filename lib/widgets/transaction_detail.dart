@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:pocket_planner/screen/dashboard.dart';
+import 'package:pocket_planner/widgets/update_transaction.dart';
 
 class TransactionDetailsPage extends StatefulWidget {
   final String userId;
@@ -42,6 +43,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green.shade900,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -56,10 +58,6 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Transaction Details',
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                  ),
                   SizedBox(height: 16.0),
                   _buildTransactionDetailsBox(
                     title,
@@ -158,7 +156,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Detail Rencana',
+                'Detail Transaksi',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -166,26 +164,23 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   color: Colors.green.shade900,
                 ),
               ),
-            //  ElevatedButton(
-            //     onPressed: () async {
-            //       String rencanaTabunganId = await _getRencanaTabunganId();
-            //       showDialog(
-            //         context: context,
-            //         builder: (BuildContext context) {
-            //           return UpdateRencanaTabunganForm(
-            //             rencanaTabunganId: rencanaTabunganId,
-            //             userId: widget.userId,
-            //             rencanaData: _rencanaData,
-            //             refreshData: _refreshData,
-            //           );
-            //         },
-            //       );
-            //     },
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.green.shade600,
-            //     ),
-            //     child: Text('Edit Rencana', style: TextStyle(color: Colors.white)),
-            //   ),
+             ElevatedButton(
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return UpdateTransactionForm(
+                        userId: widget.userId,
+                        transactionData: _transactionData,
+                      );
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                ),
+                child: Text('Edit Transaction', style: TextStyle(color: Colors.white)),
+              ),
             ],
           ),
           SizedBox(height: 20),

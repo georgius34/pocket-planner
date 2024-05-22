@@ -24,6 +24,14 @@ class NavBar extends StatelessWidget {
           ),
           NavigationDestination(
             icon: Icon(
+              Icons.book_rounded,
+              color: Colors.green,
+              size: 30,
+              ),
+            label: 'Laporan Keuangan',
+          ),
+          NavigationDestination(
+            icon: Icon(
               Icons.savings,
               color: Colors.green,
               size: 30,

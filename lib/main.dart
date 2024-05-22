@@ -1,20 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:intl/date_symbol_data_local.dart'; // Pastikan impor ini benar
 import 'package:pocket_planner/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/screen/splash_screen.dart';
+import 'package:pocket_planner/services/db.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  await initializeDateFormatting('id_ID', null);
   await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
 );
   // Create an instance of your Db class
-  // Db db = Db();
+  Db db = Db();
 
   // Add a user and obtain the generated user ID
-  // String userId = await db.addUser();
+  String userId = await db.addUser();
 
-  String userId = '354eb982-3ee2-429b-9cb7-6e1d8fb336e7';
+  // String userId = '354eb982-3ee2-429b-9cb7-6e1d8fb336e7';
 
   // Pass the generated user ID to the MyApp widget
   runApp(MyApp(userId: userId));
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pocket Planner Demo',
+      title: 'Pocket Planner',
       builder: (context, child){
         return MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
          child: child!);
