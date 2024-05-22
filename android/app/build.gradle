@@ -1,4 +1,6 @@
-    plugins {
+ext.kotlin_version = '1.6.0'
+
+plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
     id 'com.google.gms.google-services'

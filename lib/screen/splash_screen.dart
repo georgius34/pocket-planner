@@ -19,7 +19,7 @@ class SplashScreenState extends State<SplashScreen>
   void initState(){
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => Dashboard(userId: widget.userId))
       );
@@ -33,14 +33,14 @@ class SplashScreenState extends State<SplashScreen>
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue, Colors.pink],
+            colors: [Colors.green, Colors.lightGreen],
             begin: Alignment.topRight,
             end:  Alignment.bottomLeft )),
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Splash Screen',
-          style: TextStyle(color: Colors.green, fontSize: 35),)
+          Text('Pocket Planner',
+          style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.w600),)
         ],
       ),
       ),
