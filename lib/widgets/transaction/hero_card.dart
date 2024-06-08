@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pocket_planner/utils/format.dart';
 
 class HeroCard extends StatelessWidget {
   HeroCard({
@@ -45,7 +46,7 @@ class Cards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final NumberFormat currencyFormatter = getCurrencyFormatter();
 
     return Container(
       color: Colors.green.shade900,

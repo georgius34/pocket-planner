@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:pocket_planner/screen/dashboard.dart';
-import 'package:pocket_planner/widgets/update_transaction.dart';
+import 'package:pocket_planner/utils/detail_box.dart';
+import 'package:pocket_planner/utils/format.dart';
+import 'package:pocket_planner/widgets/transaction/update_transaction.dart';
 
 class TransactionDetailsPage extends StatefulWidget {
   final String userId;
@@ -17,6 +19,7 @@ class TransactionDetailsPage extends StatefulWidget {
 
 class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
   late dynamic _transactionData;
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
   @override
   void initState() {
@@ -24,21 +27,30 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
     _transactionData = widget.transactionData;
   }
 
+    void _updateTransactionData(dynamic newData) {
+    setState(() {
+      _transactionData = newData;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Extract transaction details
     final String title = _transactionData['title'];
     final int amount = _transactionData['amount'] as int;
-    final String type = _transactionData['type'];
-    final DateTime timestamp = DateTime.fromMillisecondsSinceEpoch(_transactionData['timestamp']);
     final String category = _transactionData['category'];
-    final String monthYear = _transactionData['monthyear'];
+    final String type = _transactionData['type'];
+    final DateTime createdAtDate = DateTime.fromMillisecondsSinceEpoch(_transactionData['createdAt']);
+    final DateTime updatedAtDate = DateTime.fromMillisecondsSinceEpoch(_transactionData['updatedAt']);
+    final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(_transactionData['dateTime']);
     final int remainingAmount = _transactionData['remainingAmount'] as int;
     final int totalCredit = _transactionData['totalCredit'] as int;
     final int totalDebit = _transactionData['totalDebit'] as int;
 
-    // Format timestamp to dd MMM yyyy format
-    final formattedDate = DateFormat('dd MMM yyyy').format(timestamp);
+  // Format timestamp to dd MMM yyyy format
+    final String createdAt = getDateTimeFormatter().format(createdAtDate);
+    final String updatedAt = getDateTimeFormatter().format(updatedAtDate);
+    final String formattedDateTime = getDateFormatter().format(dateTime);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,12 +75,13 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                     title,
                     amount,
                     category,
-                    monthYear,
+                    type,
+                    formattedDateTime,
+                    createdAt,
+                    updatedAt,
                     remainingAmount,
-                    formattedDate,
                     totalCredit,
                     totalDebit,
-                    type,
                   ),
                 ],
               ),
@@ -77,59 +90,17 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
       );
     }
 
-  Widget _buildDetailBox(String label, String value) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(0, 2),
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 1.0,
-            spreadRadius: 1.5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$label:',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.1,
-            ),
-          ),
-          SizedBox(height: 4.0),
-          Text(
-            value,
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTransactionDetailsBox(
     String title,
     int amount,
     String category,
-    String monthYear,
+    String type,
+    String formattedDateTime,
+    String createdAt,
+    String updatedAt,
     int remainingAmount,
-    String date,
     int totalCredit,
     int totalDebit,
-    String type,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -156,11 +127,10 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Detail Transaksi',
+                'Transaction Detail',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
                   color: Colors.green.shade900,
                 ),
               ),
@@ -172,35 +142,40 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                       return UpdateTransactionForm(
                         userId: widget.userId,
                         transactionData: _transactionData,
+                        onUpdate: _updateTransactionData, // Tambahkan callback
                       );
                     },
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade600,
+                      backgroundColor: Colors.green.shade600,
+                      padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0), // Adjust padding here
+                      minimumSize: Size(135, 35), // Set minimum size to zero to allow for smaller dimensions
                 ),
-                child: Text('Edit Transaction', style: TextStyle(color: Colors.white)),
+                child: Text('Update Transaction', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
           SizedBox(height: 20),
-          _buildDetailBox('Title', title),
+          buildDetailBox('Title', title),
           SizedBox(height: 5),
-          _buildDetailBox('Amount', 'Rp ${amount.toString()}'),
+          buildDetailBox('Amount',  _currencyFormat.format(amount)),
           SizedBox(height: 5),
-          _buildDetailBox('Category', category),
+          buildDetailBox('Category', category),
           SizedBox(height: 5),
-          _buildDetailBox('Month Year', monthYear),
+          buildDetailBox('Date Time', formattedDateTime),
           SizedBox(height: 5),
-          _buildDetailBox('Remaining Amount', 'Rp ${remainingAmount.toString()}'),
+          buildDetailBox('Remaining Amount', 'Rp ${remainingAmount.toString()}'),
           SizedBox(height: 5),
-          _buildDetailBox('Date', date),
+          buildDetailBox('created At', createdAt),
           SizedBox(height: 5),
-          _buildDetailBox('Total Credit', 'Rp ${totalCredit.toString()}'),
+          buildDetailBox('updated At', updatedAt),
           SizedBox(height: 5),
-          _buildDetailBox('Total Debit', 'Rp ${totalDebit.toString()}'),
+          buildDetailBox('Total Credit',  _currencyFormat.format(totalCredit)),
           SizedBox(height: 5),
-          _buildDetailBox('Type', type),
+          buildDetailBox('Total Debit',  _currencyFormat.format(totalDebit)),
+          SizedBox(height: 5),
+          buildDetailBox('Type', type),
           SizedBox(height: 5),
         ],
       ),

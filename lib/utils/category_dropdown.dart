@@ -13,7 +13,7 @@ class CategoryDropDown extends StatelessWidget {
     return Container(
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.green.shade900,
         borderRadius: BorderRadius.circular(10.0),
         border: Border.all(color: Colors.green.shade600),
       ),
@@ -23,6 +23,7 @@ class CategoryDropDown extends StatelessWidget {
           value: cattype,
           isExpanded: true,
           hint: Text("Select Category"),
+          dropdownColor: Colors.green.shade900, // Set the background color of the dropdown items
           items: appIcons.homeExpenseCategories.map((e) =>
             DropdownMenuItem<String>(
               value: e['name'],
@@ -30,13 +31,13 @@ class CategoryDropDown extends StatelessWidget {
                 children: [
                   Icon(
                     e['icon'],
-                    color: Colors.green.shade600,
+                    color: Colors.white,
                     size: 20,
                   ),
                   SizedBox(width: 15),
                   Text(
                     e['name'],
-                    style: TextStyle(color: Colors.green.shade600),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ],
               ),
@@ -61,8 +62,32 @@ class AppIcons {
       "icon": FontAwesomeIcons.shoppingCart
     },
     {
-      "name": "Home",
-      "icon": FontAwesomeIcons.addressBook
+      "name": "Education",
+      "icon": FontAwesomeIcons.school
+    },
+      {
+      "name": "Food",
+      "icon": FontAwesomeIcons.bowlFood
+    },
+      {
+      "name": "Transportation",
+      "icon": FontAwesomeIcons.car
+    },
+      {
+      "name": "Travelling",
+      "icon": FontAwesomeIcons.campground
+    },
+      {
+      "name": "Health",
+      "icon": FontAwesomeIcons.hospital
+    },
+      {
+      "name": "Cosmetic",
+      "icon": FontAwesomeIcons.linesLeaning
+    },
+      {
+      "name": "Others",
+      "icon": FontAwesomeIcons.o
     }
   ];
 
@@ -71,6 +96,6 @@ class AppIcons {
       (category) => category['name'] == categoryName,
       orElse: () => {"icon": FontAwesomeIcons.shoppingCart}
     );
-    return category['icon']; // Ini harus mengembalikan IconData
+    return category['icon'];
   }
 }

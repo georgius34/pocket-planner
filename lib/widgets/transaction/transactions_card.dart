@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/widgets/transaction_card.dart';
-import 'package:pocket_planner/widgets/transaction_detail.dart';
+import 'package:flutter/widgets.dart';
+import 'package:pocket_planner/widgets/transaction/transaction_card.dart';
+import 'package:pocket_planner/widgets/transaction/transaction_detail.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
@@ -21,7 +22,7 @@ class TransactionsCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                "Transaksi Terbaru",
+                "Newest Transaction",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.green.shade900, wordSpacing: 1.5),
                 )
               ],
@@ -46,7 +47,7 @@ class TransactionList extends StatelessWidget {
       .collection('users')
       .doc(userId)
       .collection("transaction")
-      .orderBy('timestamp', descending: true)
+      .orderBy('createdAt', descending: true)
       .limit(20)
       .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -54,8 +55,29 @@ class TransactionList extends StatelessWidget {
           return Text('Something went wrong');
         } else if (snapshot.connectionState == ConnectionState.waiting) {
           return Text("Loading");
-        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty){
-          return const Center(child: Text('No transactions found'),);
+        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 50,),
+                Icon(
+                  Icons.info_outline,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'No Data Found',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
       var data = snapshot.data!.docs;
 
@@ -65,16 +87,14 @@ class TransactionList extends StatelessWidget {
       physics: ScrollPhysics(),
       itemBuilder: (context, index){
         var cardData = data[index];
-      // Wrap each TransactionCard with GestureDetector
             return GestureDetector(
               onTap: () {
-                // Navigate to transaction details page when clicked
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TransactionDetailsPage(
                       userId: userId, 
-                      transactionData: cardData.data(), // Pass transaction data to details page
+                      transactionData: cardData.data(),
                     ),
                   ),
                 );

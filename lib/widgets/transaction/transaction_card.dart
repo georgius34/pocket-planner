@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/utils/icons_list.dart';
 
 //ignore_for_file: prefer_const_constructors
@@ -17,21 +18,13 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['timestamp']);
-    String formattedDate = DateFormat('d MMM hh:mma').format(date);
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['dateTime']);
+    final DateFormat dateTimeFormatter = getDateTimeFormatter();
+    final NumberFormat currencyFormatter = getCurrencyFormatter();
 
-    // Format amounts
-    String formattedAmount = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(data['amount']);
-
-    String formattedRemainingAmount = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(data['remainingAmount']);
+    String formattedDate = dateTimeFormatter.format(date);
+    String formattedAmount = currencyFormatter.format(data['amount']);
+    String formattedRemainingAmount = currencyFormatter.format(data['remainingAmount']);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8), //padding list datany

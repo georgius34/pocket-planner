@@ -37,7 +37,7 @@ class CategoryDetailList extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          width: 40,
+                          width: 45,
                           height: 30,
                           color: color,
                           child: Center(

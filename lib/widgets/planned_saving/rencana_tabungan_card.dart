@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pocket_planner/utils/format.dart';
 
 class RencanaTabunganCard extends StatelessWidget {
   final dynamic rencanaData;
@@ -9,30 +10,19 @@ class RencanaTabunganCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String title = rencanaData['title'];
-    final double targetAmount = rencanaData['targetAmount'];
     final String description = rencanaData['description'];
-    final int deadline = rencanaData['deadline']; // Number of days for the plan
-    final double progress = rencanaData['progress'];
-    final String startDateString = rencanaData['startDate']; // "dd/MM/yyyy"
-    final String endDateString = rencanaData['endDate']; // "dd/MM/yyyy"
+    final int progress = rencanaData['progress'];
+    final int endDateEpoch = rencanaData['endDate']; // Milliseconds since epoch
 
-    // Parse the start and end dates
-    DateTime startDate = DateFormat('dd/MM/yyyy').parse(startDateString);
-    DateTime endDate = DateFormat('dd/MM/yyyy').parse(endDateString);
+    DateTime endDate = DateTime.fromMillisecondsSinceEpoch(endDateEpoch);
 
     // Calculate the number of days remaining until the end date
     DateTime today = DateTime.now();
     int daysRemaining = endDate.difference(today).inDays;
 
-    // Calculate the number of days from start to today
-    int daysSinceStart = today.difference(startDate).inDays;
+    final NumberFormat formattedTargetAmount = getCurrencyFormatter();
+    String formattedAmount = formattedTargetAmount.format(rencanaData['targetAmount']);
 
-    // Format target amount
-    String formattedTargetAmount = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(targetAmount);
 
     return Container(
       width: double.infinity,
@@ -71,7 +61,7 @@ class RencanaTabunganCard extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    formattedTargetAmount,
+                    formattedAmount,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade600,
@@ -79,7 +69,7 @@ class RencanaTabunganCard extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    '$daysRemaining hari lagi',
+                    '$daysRemaining days remaining',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade600,

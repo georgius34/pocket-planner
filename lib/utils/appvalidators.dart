@@ -1,7 +1,7 @@
 class AppValidator {
   String? validateEmail(String? value) {
     if (value!.isEmpty) {
-      return 'Isi email';
+      return 'Email must not be empty';
     }
     RegExp emailRegExp = RegExp(r'[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegExp.hasMatch(value)) {
@@ -12,7 +12,7 @@ class AppValidator {
 
   String? validatePhoneNumber(String? value) {
     if (value!.isEmpty) {
-      return 'Isi phone number';
+      return 'Phone Number must not be empty';
     }
     if (value.length != 10) {
       return 'Please enter a 10-digit phone number';
@@ -29,18 +29,18 @@ class AppValidator {
 
   String? isEmptyCheck(String? value) {
     if (value!.isEmpty) {
-      return 'Harus ada data';
+      return 'Data must not be empty';
     }
     return null;
   }
 
   String? validateAmount(String? value) {
     if (value!.isEmpty) {
-      return 'Harus ada data';
+      return 'Amount must not be empty';
     }
     String digits = value.replaceAll(RegExp(r'[Rp,. ]'), '');
     if (digits.isEmpty || !RegExp(r'^\d+$').hasMatch(digits)) {
-      return 'Masukkan jumlah yang valid';
+      return 'Please enter a valid amount';
     }
     return null;
   }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/screen/transaction_screen.dart';
-import 'package:pocket_planner/screen/laporan_keuangan_screen.dart';
-import 'package:pocket_planner/screen/rencana_tabungan_screen.dart';
+import 'package:pocket_planner/screen/transaction/transaction_screen.dart';
+import 'package:pocket_planner/screen/financial_report/laporan_keuangan_screen.dart';
+import 'package:pocket_planner/screen/planned_saving/rencana_tabungan_screen.dart';
 import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
 // ignore_for_file: use_super_parameters
 
 class Dashboard extends StatefulWidget {
-  final String userId; // Add userId as a parameter
-  final int initialIndex; // Add initialIndex as a parameter
+  final String userId;
+  final int initialIndex;
 
   const Dashboard({Key? key, required this.userId, this.initialIndex = 0}) : super(key: key);
 
@@ -19,15 +19,14 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int currentIndex = 0;
 
-  var pageViewList; // Initialize pageViewList in initState()
+  var pageViewList;
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex; // Gunakan nilai initialIndex yang diteruskan
-    // Initialize pageViewList with HomeScreen and RencanaTabunganScreen widgets
+    currentIndex = widget.initialIndex;
     pageViewList = [
-      HomeScreen(userId: widget.userId), // Pass userId to HomeScreen
+      TransactionScreen(userId: widget.userId),
       LaporanKeuanganScreen(userId: widget.userId),
       RencanaTabunganScreen(userId: widget.userId),
     ];

@@ -13,6 +13,11 @@ class Db {
   Future<String> addUser() async {
     // Generate a unique user ID
     String userId = generateUserId();
+    // Get the current date and time in DateTime format
+    DateTime now = DateTime.now();
+
+    // Get the current date and time in milliseconds since epoch format
+    int millisecondsSinceEpoch = now.millisecondsSinceEpoch;
 
     // Create a new document in the "users" collection with the generated user ID
     await users
@@ -21,6 +26,8 @@ class Db {
           'remainingAmount': 0,
           'totalCredit': 0,
           'totalDebit': 0,
+          'createdAt': millisecondsSinceEpoch,
+          'updatedAt': millisecondsSinceEpoch,
           // You can add more fields here if needed
         })
         .then((value) => print("User Added with ID: $userId"))
@@ -29,4 +36,6 @@ class Db {
     // Return the generated user ID
     return userId;
   }
+  
+  getFirestoreDateFormatter() {}
 }

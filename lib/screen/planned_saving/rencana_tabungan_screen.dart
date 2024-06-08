@@ -2,24 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pocket_planner/screen/rencana_tabungan_detail_screen.dart';
-import 'package:pocket_planner/widgets/add_rencana_tabungan.dart';
-import 'package:pocket_planner/widgets/rencana_tabungan_card.dart';
+import 'package:pocket_planner/screen/planned_saving/rencana_tabungan_detail_screen.dart';
+import 'package:pocket_planner/widgets/planned_saving/add_planned_saving.dart';
+import 'package:pocket_planner/widgets/planned_saving/rencana_tabungan_card.dart';
 
-class RencanaTabunganScreen extends StatelessWidget {
+class RencanaTabunganScreen extends StatefulWidget {
   final String userId;
 
   RencanaTabunganScreen({required this.userId, Key? key}) : super(key: key);
 
   @override
+  State<RencanaTabunganScreen> createState() => _RencanaTabunganScreenState();
+}
+
+class _RencanaTabunganScreenState extends State<RencanaTabunganScreen> {
+  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green.shade900,
-        // title: Text(
-        //   'Rencana Tabungan',
-        //   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500, wordSpacing: 1.2),
-        // ),
       ),
       body: Stack(
         children: [
@@ -33,9 +35,9 @@ class RencanaTabunganScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Daftar Rencana Tabungan',
+                        'Planned Saving List',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -60,19 +62,19 @@ class RencanaTabunganScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Padding(
+                   child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('users')
-                            .doc(userId)
+                            .doc(widget.userId)
                             .collection('rencanaTabungan')
                             .limit(10)
                             .orderBy('deadline', descending: false)
                             .snapshots(),
                         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasError) {
-                            return Text('Something went wrong');
+                            return Center(child: Text('Something went wrong'));
                           }
 
                           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -80,6 +82,31 @@ class RencanaTabunganScreen extends StatelessWidget {
                           }
 
                           var data = snapshot.data!.docs;
+
+                          if (data.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 50,),
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'No Data Found',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
 
                           return ListView.builder(
                             shrinkWrap: true,
@@ -93,7 +120,7 @@ class RencanaTabunganScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => RencanaTabunganDetailScreen(
-                                        userId: userId,
+                                        userId: widget.userId,
                                         rencanaData: rencana.data(), // Pass rencana object here
                                       ),
                                     ),
@@ -122,12 +149,12 @@ class RencanaTabunganScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddRencanaTabunganForm(userId: userId),
+                    builder: (context) => AddRencanaTabunganForm(userId: widget.userId),
                   ),
                 );
               },
               child: Icon(Icons.add, color: Colors.white),
-              backgroundColor: Colors.green.shade600,
+              backgroundColor: Colors.green.shade900,
             ),
           ),
         ],
