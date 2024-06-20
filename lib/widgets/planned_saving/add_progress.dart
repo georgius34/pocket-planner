@@ -94,6 +94,10 @@ Future<void> _updateCurrentAmount() async {
     });
 
     widget.refreshData(currentAmount + inputAmount);
+    // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Progresss added successfully')),
+      );
     Navigator.pop(context);
   } catch (e) {
     print('Failed to update progress: $e');

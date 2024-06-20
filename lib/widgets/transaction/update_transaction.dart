@@ -138,6 +138,11 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
         });
 
         widget.onUpdate(data);
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Transaction updated uccessfully')),
+      );
+
         Navigator.pop(context);
       }
     }

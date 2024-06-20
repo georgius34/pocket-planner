@@ -112,6 +112,10 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         setState(() {
           isLoader = false;
         });
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Transaction added successfully')),
+      );
 
         Navigator.pop(context);
       }

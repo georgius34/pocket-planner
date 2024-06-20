@@ -113,6 +113,10 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       'createdAt': millisecondsSinceEpoch,
       'updatedAt': millisecondsSinceEpoch,
     });
+      // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Planned Saving added successfully')),
+      );
 
     Navigator.pop(context);
   }

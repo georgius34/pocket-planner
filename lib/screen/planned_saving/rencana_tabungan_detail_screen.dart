@@ -119,8 +119,8 @@ class _RencanaTabunganDetailScreenState
 
     final String createdAt = getDateTimeFormatter().format(createdAtDate);
     final String updatedAt = getDateTimeFormatter().format(updatedAtDate);
-        final String formattedStartDate = getDateTimeFormatter().format(startDate);
-    final String formattedEndDate = getDateTimeFormatter().format(endDate);
+        final String formattedStartDate = getDateFormatter().format(startDate);
+    final String formattedEndDate = getDateFormatter().format(endDate);
 
     return Scaffold(
       appBar: AppBar(

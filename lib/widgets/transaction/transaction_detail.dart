@@ -150,7 +150,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                 style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.shade600,
                       padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0), // Adjust padding here
-                      minimumSize: Size(135, 35), // Set minimum size to zero to allow for smaller dimensions
+                      minimumSize: Size(145, 35), // Set minimum size to zero to allow for smaller dimensions
                 ),
                 child: Text('Update Transaction', style: TextStyle(color: Colors.white)),
               ),
@@ -165,7 +165,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
           SizedBox(height: 5),
           buildDetailBox('Date Time', formattedDateTime),
           SizedBox(height: 5),
-          buildDetailBox('Remaining Amount', 'Rp ${remainingAmount.toString()}'),
+          buildDetailBox('Remaining Amount', _currencyFormat.format(remainingAmount)),
           SizedBox(height: 5),
           buildDetailBox('created At', createdAt),
           SizedBox(height: 5),

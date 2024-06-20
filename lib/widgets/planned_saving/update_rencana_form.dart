@@ -109,6 +109,10 @@ Future<void> _submitForm() async {
    setState(() {
           isLoader = false;
         });
+      // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Planned Saving updated successfully')),
+      );
     Navigator.pop(context);
   }
 }

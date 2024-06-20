@@ -6,7 +6,7 @@ NumberFormat getCurrencyFormatter() {
 }
 //format date with time
 DateFormat getDateTimeFormatter() {
-  return DateFormat('d MMM hh:mma');
+  return DateFormat('d MMM yyyy hh:mma');
 }
 
 //format date only
