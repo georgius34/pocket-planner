@@ -7,6 +7,7 @@ import 'package:pocket_planner/widgets/planned_saving/add_progress.dart';
 class TabunganDetailBox extends StatelessWidget {
   final int currentAmount;
   final int totalInterest;
+  final int monthlySaving;
   final int progress;
   final String userId;
   final dynamic rencanaData;
@@ -16,6 +17,7 @@ class TabunganDetailBox extends StatelessWidget {
   TabunganDetailBox({
     required this.currentAmount,
     required this.totalInterest,
+    required this.monthlySaving,
     required this.progress,
     required this.userId,
     required this.rencanaData,
@@ -94,6 +96,8 @@ class TabunganDetailBox extends StatelessWidget {
           ),
           SizedBox(height: 10),
           _buildCurrencyDetailRow('Total Saving', currencyFormatter.format(currentAmount)),
+          SizedBox(height: 5),
+          _buildCurrencyDetailRow('Monthly Saving', currencyFormatter.format(monthlySaving)),
           SizedBox(height: 5),
           _buildCurrencyDetailRow('Total Interest', currencyFormatter.format(totalInterest)),
         ],

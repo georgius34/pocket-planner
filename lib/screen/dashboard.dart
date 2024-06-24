@@ -17,9 +17,9 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  int currentIndex = 0;
+  late int currentIndex;
 
-  var pageViewList;
+  late List<Widget> pageViewList; 
 
   @override
   void initState() {

@@ -140,7 +140,7 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
         widget.onUpdate(data);
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Transaction updated uccessfully')),
+        SnackBar(content: Text('Transaction updated successfully')),
       );
 
         Navigator.pop(context);

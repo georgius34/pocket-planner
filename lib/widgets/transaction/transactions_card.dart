@@ -8,26 +8,29 @@ import 'package:pocket_planner/widgets/transaction/transaction_detail.dart';
 
 class TransactionsCard extends StatelessWidget {
   final String userId;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? selectedCategory;
 
-  // ignore: prefer_const_constructors_in_immutables, use_super_parameters
-  TransactionsCard({required this.userId, Key? key}) : super(key: key);
+  TransactionsCard({
+    required this.userId,
+    this.startDate,
+    this.endDate,
+    this.selectedCategory,
+  });
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
-          Row(
-            children: [
-              Text(
-                "Newest Transaction",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.green.shade900, wordSpacing: 1.5),
-                )
-              ],
-            ),
-            TransactionList(userId: userId)
+          TransactionList(
+            userId: userId,
+            startDate: startDate,
+            endDate: endDate,
+            selectedCategory: selectedCategory,
+          ),
         ],
       ),
     );
@@ -36,20 +39,40 @@ class TransactionsCard extends StatelessWidget {
 
 class TransactionList extends StatelessWidget {
   final String userId;
-  
- // ignore: prefer_const_constructors_in_immutables, use_super_parameters
- TransactionList({required this.userId, Key? key}) : super(key: key);
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? selectedCategory; // New property to receive selected category
+
+  TransactionList({
+    required this.userId,
+    this.startDate,
+    this.endDate,
+    this.selectedCategory,
+  });
 
   @override
   Widget build(BuildContext context) {
+    Query query = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection("transaction");
+
+  // Apply date filter
+    if (startDate != null && endDate != null) {
+      query = query.where('dateTime', isGreaterThanOrEqualTo: startDate!.millisecondsSinceEpoch);
+      query = query.where('dateTime', isLessThanOrEqualTo: endDate!.millisecondsSinceEpoch + 86399999);
+    }
+
+    // Apply category filter
+    if (selectedCategory != null && selectedCategory!.isNotEmpty) {
+      query = query.where('category', isEqualTo: selectedCategory);
+    }
+
+    query = query.orderBy('createdAt', descending: true);
+
+
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection("transaction")
-      .orderBy('createdAt', descending: true)
-      .limit(20)
-      .snapshots(),
+      stream: query.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');

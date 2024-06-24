@@ -90,6 +90,7 @@ Future<void> _submitForm() async {
       totalInterest = profit.toInt() * periode;
     }
     int newProgress = ((currentAmount / targetAmount) * 100).toInt();
+    int monthlySaving = (targetAmount / periode).ceil();
 
     var data = {
       'title': _titleController.text,
@@ -97,6 +98,7 @@ Future<void> _submitForm() async {
       'description': _descriptionController.text,
       'bunga': bunga,
       'periode': periode,
+      'monthlySaving': monthlySaving,
       'endDate': formatter.format(endDate), // Update end date in Firestore
       'deadline': deadline, // Update deadline in Firestore
       'type': type,

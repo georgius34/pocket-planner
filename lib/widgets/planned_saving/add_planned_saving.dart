@@ -94,6 +94,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
 
       totalInterest = (profit * periode).toInt(); // Change double to int
     }
+      int monthlySaving = (targetAmount / periode).ceil();
 
     await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(id).set({
       'id': id,
@@ -103,6 +104,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       'targetAmount': targetAmount,
       'currentAmount': currentAmount,
       'totalInterest': totalInterest,
+      'monthlySaving': monthlySaving,
       'periode': periode,
       'deadline': deadline,
       'progress': progress,

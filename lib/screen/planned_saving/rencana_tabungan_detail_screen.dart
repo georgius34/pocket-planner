@@ -54,15 +54,16 @@ class _RencanaTabunganDetailScreenState
           .doc(_rencanaData['id'])
           .delete();
 
-      Navigator.pushAndRemoveUntil(
+       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => Dashboard(userId: widget.userId),
+          builder: (context) => Dashboard(
+            userId: widget.userId,
+            initialIndex: 2, // Index of the RencanaTabunganScreen
+          ),
         ),
         (route) => false,
-      ).then((_) {
-        Navigator.pop(context);
-      });
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete plan')),
@@ -112,6 +113,7 @@ class _RencanaTabunganDetailScreenState
     final int bunga = _rencanaData['interest'];
     final int taxRate = _rencanaData['taxRate'];
     final int totalInterest = _rencanaData['totalInterest'];
+    final int monthlySaving = _rencanaData['monthlySaving'];
     final DateTime createdAtDate = DateTime.fromMillisecondsSinceEpoch(_rencanaData['createdAt']);
     final DateTime updatedAtDate = DateTime.fromMillisecondsSinceEpoch(_rencanaData['updatedAt']);
     final DateTime startDate = DateTime.fromMillisecondsSinceEpoch(startDateEpoch);
@@ -144,6 +146,7 @@ class _RencanaTabunganDetailScreenState
                 currentAmount: currentAmount,
                 totalInterest: totalInterest,
                 progress: progress,
+                monthlySaving: monthlySaving,
                 userId: widget.userId,
                 rencanaData: _rencanaData,
                 getRencanaTabunganId: _getRencanaTabunganId,

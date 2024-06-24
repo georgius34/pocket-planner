@@ -4,45 +4,84 @@ import 'package:intl/intl.dart';
 import 'package:pocket_planner/utils/format.dart';
 
 class HeroCard extends StatelessWidget {
-  HeroCard({
-    super.key,
-    required this.userId,
-  });
   final String userId;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? selectedCategory;
+
+  HeroCard({
+    required this.userId,
+    this.startDate,
+    this.endDate,
+    this.selectedCategory,
+  });
+
 
   @override
   Widget build(BuildContext context) {
-    final Stream<DocumentSnapshot> _usersStream =
-        FirebaseFirestore.instance.collection('users').doc(userId).snapshots();
-    return StreamBuilder<DocumentSnapshot>(
-      stream: _usersStream,
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+    Query query = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection("transaction");
+
+  // Apply date filter
+    if (startDate != null && endDate != null) {
+      query = query.where('dateTime', isGreaterThanOrEqualTo: startDate!.millisecondsSinceEpoch);
+      query = query.where('dateTime', isLessThanOrEqualTo: endDate!.millisecondsSinceEpoch + 86399999);
+    }
+
+    // Apply category filter
+    if (selectedCategory != null && selectedCategory!.isNotEmpty) {
+      query = query.where('category', isEqualTo: selectedCategory);
+    }
+
+    query = query.orderBy('createdAt', descending: true);
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
         }
 
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Text('Document does not exist');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
           return Text("Loading");
         }
-        var data = snapshot.data!.data() as Map<String, dynamic>;
 
-        return Cards(data: data);
+        double totalCredit = 0;
+        double totalDebit = 0;
+
+        snapshot.data!.docs.forEach((doc) {
+          var transaction = doc.data() as Map<String, dynamic>;
+          if (transaction['type'] == 'credit') {
+            totalCredit += transaction['amount'];
+          } else if (transaction['type'] == 'debit') {
+            totalDebit += transaction['amount'];
+          }
+        });
+
+        double remainingAmount = totalCredit - totalDebit;
+
+        return Cards(
+          totalCredit: totalCredit,
+          totalDebit: totalDebit,
+          remainingAmount: remainingAmount,
+        );
       },
     );
   }
 }
 
 class Cards extends StatelessWidget {
-  const Cards({
-    super.key,
-    required this.data,
-  });
+  final double totalCredit;
+  final double totalDebit;
+  final double remainingAmount;
 
-  final Map data;
+  const Cards({
+    required this.totalCredit,
+    required this.totalDebit,
+    required this.remainingAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +106,7 @@ class Cards extends StatelessWidget {
                       fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  currencyFormatter.format(data['remainingAmount']),
+                  currencyFormatter.format(remainingAmount),
                   style: TextStyle(
                       fontSize: 40,
                       color: Colors.white,
@@ -90,13 +129,13 @@ class Cards extends StatelessWidget {
                   CardOne(
                     color: Colors.green,
                     heading: 'Credit',
-                    amount: currencyFormatter.format(data['totalCredit']),
+                    amount: currencyFormatter.format(totalCredit),
                   ),
                   SizedBox(width: 10), // space
                   CardOne(
                     color: Colors.red,
                     heading: 'Debit',
-                    amount: currencyFormatter.format(data['totalDebit']),
+                    amount: currencyFormatter.format(totalDebit),
                   ),
                 ],
               ))
