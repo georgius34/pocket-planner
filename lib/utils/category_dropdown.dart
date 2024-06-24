@@ -24,6 +24,7 @@ class CategoryDropDown extends StatelessWidget {
           isExpanded: true,
           hint: Text("Select Category"),
           dropdownColor: Colors.green.shade900, // Set the background color of the dropdown items
+                    iconEnabledColor: Colors.white, // Change arrow color to white
           items: appIcons.homeExpenseCategories.map((e) =>
             DropdownMenuItem<String>(
               value: e['name'],

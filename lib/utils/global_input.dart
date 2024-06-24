@@ -107,6 +107,7 @@
             ],
             onChanged: onChanged,
             dropdownColor: Colors.green.shade900,
+            iconEnabledColor: Colors.white, // Change arrow color to white
             decoration: InputDecoration(
               fillColor: Colors.green.shade900,
               filled: true,
@@ -168,6 +169,7 @@ Widget buildDropDownPlanTypeRow({
           ],
           dropdownColor: Colors.green.shade900,
           icon: Icon(Icons.arrow_drop_down, color: Colors.white), // Add icon for dropdown
+          iconEnabledColor: Colors.white, // Change arrow color to white
           decoration: InputDecoration(
             fillColor: Colors.green.shade900,
             filled: true,
@@ -242,6 +244,7 @@ class PeriodInputRow extends StatelessWidget {
         DropdownButtonFormField<int>(
           value: value,
           icon: null,
+                    iconEnabledColor: Colors.white, // Change arrow color to white
           decoration: InputDecoration(
             fillColor: Colors.green.shade900,
             filled: true,
@@ -274,4 +277,44 @@ class PeriodInputRow extends StatelessWidget {
       ]
     );
   }
+}
+// Add this new method for date input row
+Widget buildDateInputRow({
+  required String label,
+  required IconData icon,
+  required TextEditingController controller,
+  required VoidCallback onTap,
+  required String? Function(String?)? validator,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(color: Colors.green.shade900, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+      ),
+      SizedBox(height: 2),
+      TextFormField(
+        controller: controller,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: validator,
+        readOnly: true, // Make the field read-only
+        onTap: onTap, // Call the date picker on tap
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, wordSpacing: 1.5),
+        decoration: InputDecoration(
+          fillColor: Colors.green.shade900,
+          filled: true,
+          prefixIcon: Icon(icon, color: Colors.white),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.green.shade900),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.green.shade900),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ),
+    ],
+  );
 }

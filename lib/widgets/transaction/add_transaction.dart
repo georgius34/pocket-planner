@@ -23,6 +23,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   var appValidator = AppValidator();
   var amountController = TextEditingController();
   var titleController = TextEditingController();
+  var dateController = TextEditingController(); // Add this line
+  DateTime? selectedDate; // Add this line
   var uid = Uuid();
 
   @override
@@ -36,6 +38,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
     amountController.removeListener(_formatAmount);
     amountController.dispose();
     titleController.dispose();
+      dateController.dispose(); // Add this line
     super.dispose();
   }
 
@@ -53,6 +56,24 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
     );
+  }
+
+   // Add this method to show the date picker
+  void _pickDate(BuildContext context) async {
+    final initialDate = DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? initialDate,
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        selectedDate = pickedDate;
+        dateController.text = getDateFormatter().format(selectedDate!); // Update this line
+      });
+    }
   }
 
   Future<void> _submitForm(String userId) async {
@@ -96,7 +117,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           "amount": amount,
           "category": category,
           "type": type,
-          "dateTime": millisecondsSinceEpoch,
+          "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
           "createdAt": millisecondsSinceEpoch,
           "updatedAt": millisecondsSinceEpoch,
           "totalCredit": totalCredit,
@@ -108,6 +129,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
         amountController.clear();
         titleController.clear();
+        dateController.clear(); // Add this line
 
         setState(() {
           isLoader = false;
@@ -154,6 +176,15 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                 controller: amountController,
                 validator: appValidator.validateAmount,
                 isAmount: true,
+              ),
+              SizedBox(height: 10),
+              // Add the date picker input row here
+              buildDateInputRow(
+                label: 'Date',
+                icon: Icons.calendar_today,
+                controller: dateController,
+                onTap: () => _pickDate(context),
+                validator: appValidator.isEmptyCheck,
               ),
               SizedBox(height: 10),
                buildCategoryDropDownInput(
