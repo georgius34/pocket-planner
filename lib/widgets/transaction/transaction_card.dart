@@ -21,10 +21,20 @@ class TransactionCard extends StatelessWidget {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(data['dateTime']);
     final DateFormat dateTimeFormatter = getDateTimeFormatter();
     final NumberFormat currencyFormatter = getCurrencyFormatter();
+      String category = data['category'];
 
     String formattedDate = dateTimeFormatter.format(date);
     String formattedAmount = currencyFormatter.format(data['amount']);
     String formattedRemainingAmount = currencyFormatter.format(data['remainingAmount']);
+
+    IconData iconData;
+    if (data['type'] == 'credit') {
+      iconData = Icons.credit_card;
+    } else if (data['type'] == 'debit') {
+      iconData = Icons.money_off;
+    } else {
+      iconData = Icons.help_outline; // Default icon
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8), //padding list datany
@@ -61,12 +71,10 @@ class TransactionCard extends StatelessWidget {
                   : Colors.red.withOpacity(0.2),
               ),
               child: Center(
-                child: FaIcon(
-                  appIcons.getExpenseCategoryIcons('${data['category']}'),
-                  color: data['type'] == 'credit'
-                    ? Colors.green
-                    : Colors.red,
-                )
+                 child: Icon(
+                  iconData,
+                  color: data['type'] == 'credit' ? Colors.green : Colors.red,
+                ),
               ),
             ),
           ),
@@ -96,19 +104,10 @@ class TransactionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "Balance",
-                    style: TextStyle(color: Colors.grey, fontSize: 13)
-                  ),
-                  Spacer(),
-                  Text(
-                    formattedRemainingAmount,
-                    style: TextStyle(color: Colors.grey, fontSize: 13)
-                  ),
-                ],
-              ),
+                Text(
+                  category,
+                  style: TextStyle(color: Colors.grey, fontSize: 13)
+                ),
               Text(
                 formattedDate,
                 style: TextStyle(color: Colors.grey),

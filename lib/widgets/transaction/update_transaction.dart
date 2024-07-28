@@ -183,6 +183,7 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
               ),
               SizedBox(height: 10),
                buildCategoryDropDownInput(
+                userId: widget.userId,
                 label: 'Category',
                 icon: Icons.category,
                 category: category,

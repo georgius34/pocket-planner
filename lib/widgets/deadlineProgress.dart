@@ -1,13 +1,43 @@
 import 'package:flutter/material.dart';
 
 class DeadlineAndProgressBox extends StatelessWidget {
-  final int deadline;
+  final int endDateEpoch;
   final int progress;
+  final bool isComplete;
 
-  DeadlineAndProgressBox({required this.deadline, required this.progress});
+  DeadlineAndProgressBox({required this.progress, required this.isComplete, required this.endDateEpoch});
 
   @override
   Widget build(BuildContext context) {
+     DateTime endDate = DateTime.fromMillisecondsSinceEpoch(endDateEpoch);
+
+    // Calculate the number of days remaining until the end date
+    DateTime today = DateTime.now();
+    int totalRemainingDays = endDate.difference(today).inDays;
+
+    int remainingMonths = totalRemainingDays ~/ 30; // Calculate the remaining months
+
+    // Set a minimum value of 0 for remainingMonths and remainingDays
+    if (remainingMonths < 0) remainingMonths = 0;
+    if (totalRemainingDays < 0) totalRemainingDays = 0;
+
+     String remainingTimeText;
+    if (totalRemainingDays > 30) {
+      remainingTimeText = '$remainingMonths months';
+    } else {
+      remainingTimeText = '$totalRemainingDays  days';
+    }
+    Color statusColor = Colors.grey.shade600;
+    String statusText = '';
+
+    if (isComplete) {
+      statusColor = Colors.green;
+      statusText = 'Plan Completed';
+    } else if (today.isAfter(endDate)) {
+      statusColor = Colors.red;
+      statusText = 'Plan is not Completed';
+    }
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
@@ -54,10 +84,13 @@ class DeadlineAndProgressBox extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '$deadline hari',
+                      isComplete
+                      ? statusText
+                      : remainingTimeText,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: statusColor,
                         ),
                       ),
                     ],
@@ -68,14 +101,11 @@ class DeadlineAndProgressBox extends StatelessWidget {
           ),
           Spacer(),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 30),
-              child: Container(
-                height: 30,
-                child: VerticalDivider(
-                  color: Colors.grey.shade500,
-                  thickness: 1,
-                ),
+            child: Container(
+              height: 30,
+              child: VerticalDivider(
+                color: Colors.grey.shade500,
+                thickness: 1,
               ),
             ),
           ),

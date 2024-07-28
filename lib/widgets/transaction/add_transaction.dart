@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/utils/appvalidators.dart';
 import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/utils/global_input.dart';
+import 'package:pocket_planner/widgets/transaction/autocomplete_debounce.dart';
 import 'package:uuid/uuid.dart';
 
 class AddTransactionForm extends StatefulWidget {
@@ -16,7 +17,8 @@ class AddTransactionForm extends StatefulWidget {
 
 class _AddTransactionFormState extends State<AddTransactionForm> {
   var type = "credit";
-  var category = "Grocery";
+  var categoryController = TextEditingController();
+  List<String> _suggestions = []; // Add this line for suggestions
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var isLoader = false;
@@ -38,7 +40,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
     amountController.removeListener(_formatAmount);
     amountController.dispose();
     titleController.dispose();
-      dateController.dispose(); // Add this line
+    dateController.dispose(); // Add this line
+    categoryController.dispose();
     super.dispose();
   }
 
@@ -96,6 +99,23 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         int totalCredit = userDoc['totalCredit'];
         int totalDebit = userDoc['totalDebit'];
 
+        String categoryToAdd = categoryController.text.toLowerCase().trim();
+
+        // Check if category exists in Firestore
+        final categoryQuery = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userId)
+            .collection('categories')
+            .where('name', isEqualTo: categoryToAdd)
+            .get();
+
+        if (categoryQuery.docs.isEmpty) {
+          // Add the new category to Firestore
+          await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('categories').add({
+            'name': categoryToAdd,
+          });
+        }
+
         if (type == 'credit') {
           remainingAmount += amount;
           totalCredit += amount;
@@ -115,7 +135,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           "id": id,
           "title": titleController.text,
           "amount": amount,
-          "category": category,
+          "category": categoryToAdd,
           "type": type,
           "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
           "createdAt": millisecondsSinceEpoch,
@@ -187,15 +207,11 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                 validator: appValidator.isEmptyCheck,
               ),
               SizedBox(height: 10),
-               buildCategoryDropDownInput(
+               buildInputRow(
                 label: 'Category',
                 icon: Icons.category,
-                category: category,
-                onChanged: (value) {
-                  setState(() {
-                    category = value!;
-                  });
-                },
+                controller: categoryController,
+                validator: appValidator.isEmptyCheck,
               ),
               SizedBox(height: 10),
                buildTypeDropDownInput(

@@ -63,11 +63,13 @@ class TransactionList extends StatelessWidget {
       query = query.where('dateTime', isLessThanOrEqualTo: endDate!.millisecondsSinceEpoch + 86399999);
     }
 
-    // Apply category filter
     if (selectedCategory != null && selectedCategory!.isNotEmpty) {
-      query = query.where('category', isEqualTo: selectedCategory);
+      String lowerCaseCategory = selectedCategory!.toLowerCase();
+      query = query
+          .where('category', isGreaterThanOrEqualTo: lowerCaseCategory)
+          .where('category', isLessThanOrEqualTo: lowerCaseCategory + '\uf8ff');
     }
-
+    
     query = query.orderBy('createdAt', descending: true);
 
 

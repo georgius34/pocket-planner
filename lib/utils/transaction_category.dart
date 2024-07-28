@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class TransactionsCategoryDropdown extends StatelessWidget {
+class TransactionsCategoryDropdown extends StatefulWidget {
   final String? selectedCategory;
   final ValueChanged<String?> onChanged;
   final List<Map<String, dynamic>> categories;
@@ -10,6 +10,25 @@ class TransactionsCategoryDropdown extends StatelessWidget {
     required this.onChanged,
     required this.categories,
   });
+
+  @override
+  _TransactionsCategoryDropdownState createState() => _TransactionsCategoryDropdownState();
+}
+
+class _TransactionsCategoryDropdownState extends State<TransactionsCategoryDropdown> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,36 +41,18 @@ class TransactionsCategoryDropdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         border: Border.all(color: Colors.black),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: selectedCategory,
-          isExpanded: true,
-          hint: Text(
-            "Select Category",
-            style: TextStyle(color: Colors.green.shade900, fontSize: 16),
-          ),
-          dropdownColor: Colors.white,
-          items: categories.map((e) {
-            return DropdownMenuItem<String>(
-              value: e['name'],
-              child: Row(
-                children: [
-                  Icon(
-                    e['icon'],
-                    color: Colors.green.shade900,
-                    size: 18,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    e['name'],
-                    style: TextStyle(color: Colors.green.shade900),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: onChanged,
+      child: TextField(
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: "Input Category",
+          border: InputBorder.none,
+          icon: Icon(Icons.search, color: Colors.green.shade900),
+          contentPadding: EdgeInsets.only(bottom: 12), // Adjust this value
         ),
+        style: TextStyle(color: Colors.green.shade900, fontSize: 16),
+        onSubmitted: (text) {
+          widget.onChanged(text.toLowerCase());
+        },
       ),
     );
   }

@@ -75,9 +75,9 @@ class _LaporanKeuanganScreenState extends State<LaporanKeuanganScreen> {
             .collection('users')
             .doc(widget.userId)
             .collection("transaction")
-            .where('createdAt', isGreaterThanOrEqualTo: startMonth.millisecondsSinceEpoch)
-            .where('createdAt', isLessThan: endMonth.millisecondsSinceEpoch)
-            .orderBy('createdAt', descending: true)
+            .where('dateTime', isGreaterThanOrEqualTo: startMonth.millisecondsSinceEpoch)
+            .where('dateTime', isLessThan: endMonth.millisecondsSinceEpoch)
+            .orderBy('dateTime', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
