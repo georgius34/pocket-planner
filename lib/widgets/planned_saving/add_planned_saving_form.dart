@@ -20,11 +20,11 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   var titleController = TextEditingController();
+  var periodController = TextEditingController();
   var targetAmountController = TextEditingController();
   var descriptionController = TextEditingController();
   var bungaController = TextEditingController();
   var taxController = TextEditingController(); // Add tax controller
-  int? _selectedPeriode = 1; // Set default value here
   String? _selectedType; // Add selected type variable
   var uid = Uuid();
 
@@ -40,6 +40,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
   void dispose() {
     targetAmountController.removeListener(_formatAmount);
     titleController.dispose();
+    periodController.dispose();
     targetAmountController.dispose();
     descriptionController.dispose();
     bungaController.dispose();
@@ -74,12 +75,11 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
     int currentAmount = 0;
     int taxRate = taxController.text.isEmpty ? 0 : int.parse(taxController.text);
     int bunga = bungaController.text.isEmpty ? 0 : int.parse(bungaController.text);
-    int periode = _selectedPeriode ?? 1;
+    int period = int.parse(periodController.text); // Change here to use periodController
     String type = _selectedType ?? "personal";
 
     final startDate = DateTime.now();
-    final endDate = DateTime(startDate.year, startDate.month + periode, startDate.day);
-    final deadline = endDate.difference(startDate).inDays;
+    final endDate = DateTime(startDate.year, startDate.month + period, startDate.day);
     int startDateEpoch = startDate.millisecondsSinceEpoch;
     int endDateEpoch = endDate.millisecondsSinceEpoch;
     DateTime now = DateTime.now();
@@ -92,11 +92,11 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
 
       double profit = ( (bunga/100) * targetAmount * 30 * ((100-taxRate)/100)) / 365;
 
-      totalInterest = (profit * periode).toInt(); // Change double to int
+      totalInterest = (profit * period).toInt(); // Change double to int
     }
-      int monthlySaving = (targetAmount / periode).ceil();
+      int monthlySaving = (targetAmount / period).ceil();
 
-    await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(id).set({
+    await firestore.collection('users').doc(widget.userId).collection('plannedSaving').doc(id).set({
       'id': id,
       'title': titleController.text,
       'interest': bunga,
@@ -105,13 +105,13 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       'currentAmount': currentAmount,
       'totalInterest': totalInterest,
       'monthlySaving': monthlySaving,
-      'periode': periode,
-      'deadline': deadline,
+      'period': period,
       'progress': progress,
       'description': descriptionController.text,
       'type': type,
       'startDate': startDateEpoch,
       'endDate': endDateEpoch,
+      'isComplete': false,
       'createdAt': millisecondsSinceEpoch,
       'updatedAt': millisecondsSinceEpoch,
     });
@@ -158,22 +158,12 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
                 isAmount: true,
               ),
               SizedBox(height: 10.0),
-              PeriodInputRow(
-                label: 'Period (Per Month)',
+                 buildInputRow(
+                label: 'Period (Per Month 1 - 12)',
                 icon: Icons.date_range,
-                value: _selectedPeriode,
-                onChanged: (int? newValue) {
-                  setState(() {
-                    _selectedPeriode = newValue;
-                  });
-                },
-                options: [1, 3, 6, 12],
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a period';
-                  }
-                  return null;
-                },
+                controller: periodController,
+                validator: appValidator.validatePeriod,
+                isAmount: true,
               ),
               SizedBox(height: 10.0),
               buildDropDownPlanTypeRow(

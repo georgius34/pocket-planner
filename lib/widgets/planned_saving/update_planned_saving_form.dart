@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:pocket_planner/utils/appvalidators.dart';
+import 'package:pocket_planner/utils/global_input.dart';
 
 class UpdateRencanaTabunganForm extends StatefulWidget {
   final String userId;
@@ -23,12 +25,11 @@ class _UpdateRencanaTabunganFormState extends State<UpdateRencanaTabunganForm> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _targetAmountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _bungaController = TextEditingController();
-  final TextEditingController _taxController = TextEditingController();
-  int? _selectedPeriode;
-  String? _selectedType; // Add selected type variable
+  final TextEditingController _periodController = TextEditingController();
   var isLoader = false;
   late dynamic _rencanaData;
+  var appValidator = AppValidator();
+
 
   @override
   void initState() {
@@ -38,10 +39,7 @@ class _UpdateRencanaTabunganFormState extends State<UpdateRencanaTabunganForm> {
     _titleController.text = _rencanaData['title'];
     _targetAmountController.text = _formatAmount(_rencanaData['targetAmount'].toString());
     _descriptionController.text = _rencanaData['description'];
-    _bungaController.text = _rencanaData['bunga'].toString();
-    _taxController.text = _rencanaData['taxRate'].toString();
-    _selectedPeriode = _rencanaData['periode'];
-    _selectedType = _rencanaData['type'];
+  _periodController.text = _rencanaData['period'].toString(); // Corrected here
     currentAmount = _rencanaData['currentAmount'];
   }
 
@@ -49,6 +47,8 @@ class _UpdateRencanaTabunganFormState extends State<UpdateRencanaTabunganForm> {
   void dispose() {
     _targetAmountController.dispose();
     _titleController.dispose();
+    _periodController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
   
@@ -68,46 +68,32 @@ Future<void> _submitForm() async {
         isLoader = true;
       });
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final DateFormat formatter = DateFormat('dd/MM/yyyy');
     String amountText = _targetAmountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
     var targetAmount = int.parse(amountText);
-    int taxRate = _taxController.text.isEmpty ? 0 : int.parse(_taxController.text);
-    int bunga = _bungaController.text.isEmpty ? 0 : int.parse(_bungaController.text);
-    int periode = _selectedPeriode?? 1;
-    String type = _selectedType?? "personal";
+    int period = int.parse(_periodController.text); // Change here to use periodController
 
     // Calculate start and end dates
     final startDate = DateTime.now(); // Start date is today's date
-    final endDate = DateTime(startDate.year, startDate.month + periode, startDate.day);
-    final deadline = endDate.difference(startDate).inDays; // Calculate deadline
+    final endDate = DateTime(startDate.year, startDate.month + period, startDate.day);
+    int endDateEpoch = endDate.millisecondsSinceEpoch;
 
     int totalInterest = 0; // Initialize profit variable
 
-    if (type == "bank") {
-      double taxRateDouble = taxRate / 100;
-      double profit = ( (bunga/100) * targetAmount * 30 * ((100-taxRateDouble)/100)) / 365;
-
-      totalInterest = profit.toInt() * periode;
-    }
     int newProgress = ((currentAmount / targetAmount) * 100).toInt();
-    int monthlySaving = (targetAmount / periode).ceil();
+    int monthlySaving = (targetAmount / period).ceil();
 
     var data = {
       'title': _titleController.text,
       'targetAmount': targetAmount,
       'description': _descriptionController.text,
-      'bunga': bunga,
-      'periode': periode,
+      'period': period,
       'monthlySaving': monthlySaving,
-      'endDate': formatter.format(endDate), // Update end date in Firestore
-      'deadline': deadline, // Update deadline in Firestore
-      'type': type,
+      'endDate': endDateEpoch, // Update end date in Firestore
       'totalInterest': totalInterest,
-      'taxRate': taxRate,
       'progress': newProgress,
     };
 
-    await firestore.collection('users').doc(widget.userId).collection('rencanaTabungan').doc(widget.rencanaData['id']).update(data);
+    await firestore.collection('users').doc(widget.userId).collection('plannedSaving').doc(widget.rencanaData['id']).update(data);
    setState(() {
           isLoader = false;
         });
@@ -142,20 +128,14 @@ Future<void> _submitForm() async {
               SizedBox(height: 10.0),
               _buildInputRow('Target Amount', Icons.monetization_on, _targetAmountController,  null, isNumeric: true),
               SizedBox(height: 10.0),
-              _DropdownInputRow(
-                label: 'Period (Per Month)',
+              buildInputRow(
+                label: 'Period (Per Month 1 - 12)',
                 icon: Icons.date_range,
-                value: _selectedPeriode,
-                onChanged: (int? newValue) {
-                  setState(() {
-                    _selectedPeriode = newValue;
-                  });
-                },
-                options: [1, 3, 6, 12],
+                controller: _periodController,
+                validator: appValidator.validatePeriod,
+                isAmount: true,
               ),
               SizedBox(height: 10.0),
-              // _buildDropDownTypeRow(), // Add drop down type row
-              // SizedBox(height: 10.0),
               _buildInputRow('Description', Icons.description, _descriptionController, null),
               SizedBox(height: 16.0),
               ElevatedButton(
@@ -172,79 +152,6 @@ Future<void> _submitForm() async {
       ),
     );
   }
-
-  Widget _buildDropDownTypeRow() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Type',
-        style: TextStyle(color: Colors.green.shade900, fontWeight: FontWeight.w600, wordSpacing: 1.5),
-      ),
-      SizedBox(height: 2),
-      SizedBox(
-        height: 60,
-        child: DropdownButtonFormField<String>(
-          value: _selectedType ?? 'personal', // Default value is personal
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedType = newValue;
-            });
-          },
-          items: [
-            DropdownMenuItem(
-              child: Row(
-                children: [
-                  Icon(Icons.person, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Personal', style: TextStyle(color: Colors.white)),
-                ],
-              ),
-              value: 'personal',
-            ),
-            DropdownMenuItem(
-              child: Row(
-                children: [
-                  Icon(Icons.vertical_shades_closed, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Bank', style: TextStyle(color: Colors.white)),
-                ],
-              ),
-              value: 'bank',
-            ),
-          ],
-          dropdownColor: Colors.green.shade900,
-          icon: Icon(Icons.arrow_drop_down, color: Colors.white), // Add icon for dropdown
-          decoration: InputDecoration(
-            fillColor: Colors.green.shade900,
-            filled: true,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-          ),
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, wordSpacing: 1.5),
-          validator: (value) {
-            if (value == null) {
-              return 'Please select a type';
-            }
-            return null;
-          },
-        ),
-      ),
-      if (_selectedType == 'bank') ...[
-        SizedBox(height: 10.0),
-        _buildInputRow('Interest Rate', Icons.monetization_on, _bungaController, null, isNumeric: true),
-        SizedBox(height: 10.0),
-        _buildInputRow('Tax Rate', Icons.account_balance, _taxController, null, isNumeric: true),
-      ],
-    ],
-  );
-}
 
 Widget _buildInputRow(String label, IconData icon, TextEditingController controller, String? Function(String?)? validator, {bool isNumeric = false}) {
   return Column(

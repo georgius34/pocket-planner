@@ -1,7 +1,6 @@
   // global_widgets.dart
   import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-  import 'package:pocket_planner/utils/category_dropdown.dart';
 
   Widget buildInputRow({
     required String label,
@@ -264,7 +263,7 @@ class PeriodInputRow extends StatelessWidget {
         DropdownButtonFormField<int>(
           value: value,
           icon: null,
-                    iconEnabledColor: Colors.white, // Change arrow color to white
+          iconEnabledColor: Colors.white, // Change arrow color to white
           decoration: InputDecoration(
             fillColor: Colors.green.shade900,
             filled: true,
@@ -280,13 +279,15 @@ class PeriodInputRow extends StatelessWidget {
           ),
           onChanged: onChanged,
           items: options.map<DropdownMenuItem<int>>((int value) {
-            return DropdownMenuItem<int>(
+            return 
+            DropdownMenuItem<int>(
               value: value,
               child: Text(value.toString(), style: TextStyle(color: Colors.white)),
             );
           }).toList(),
           isExpanded: true,
           dropdownColor: Colors.green.shade900,
+          itemHeight: 48.0, // Adjust the height of each item
           validator: (value) {
             if (value == null) {
               return 'Please select a period';
@@ -294,10 +295,11 @@ class PeriodInputRow extends StatelessWidget {
             return null;
           },
         ),
-      ]
+      ],
     );
   }
 }
+
 // Add this new method for date input row
 Widget buildDateInputRow({
   required String label,

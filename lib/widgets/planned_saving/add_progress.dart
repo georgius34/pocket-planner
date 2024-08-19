@@ -3,6 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+//ini harus di jelasin nanti kalau jika rencananya masih belum terpenuhi maka
+//harus disamain dengan perancangan di bab 4
+//mekanisme menabung harus dijelasin di perancangan
+
 class AddProgressPopUp extends StatefulWidget {
   final String userId;
   final dynamic rencanaData;
@@ -65,6 +69,7 @@ Future<void> _updateCurrentAmount() async {
   try {
     int targetAmount = widget.rencanaData['targetAmount'].toInt();
     int currentAmount = widget.rencanaData['currentAmount'].toInt() ?? 0;
+    int periode = widget.rencanaData['periode'];
 
     // Parse the amount directly from the text field's value
     String amountText = _amountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
@@ -78,20 +83,36 @@ Future<void> _updateCurrentAmount() async {
       inputAmount = remainingAmount;
       _formatAmount(); // Call _formatAmount() to update the text field's value
     }
+    // Calculate new remaining amount
+    remainingAmount -= inputAmount;
+
+    // Deduct one month from the period
+    periode -= 1; 
+
+    // Check if the plan is complete
+    bool isPlanComplete = (remainingAmount <= 0 || periode <= 0);
+
+    // Calculate new monthly saving only if the plan is not complete
+    int monthlySaving = isPlanComplete ? 0 : (remainingAmount / periode).ceil();
 
     double progressDouble = ((currentAmount + inputAmount) / targetAmount) * 100;
-
     int newProgress = progressDouble.toInt();
+
+    // Prepare update data
+    Map<String, dynamic> updateData = {
+      'currentAmount': currentAmount + inputAmount,
+      'progress': newProgress,
+      'monthlySaving': monthlySaving,
+      'periode': periode,
+      'isComplete': isPlanComplete,
+    };
 
     await FirebaseFirestore.instance
        .collection('users')
        .doc(widget.userId)
        .collection('rencanaTabungan')
        .doc(widget.rencanaTabunganId)
-       .update({
-      'currentAmount': currentAmount + inputAmount,
-      'progress': newProgress,
-    });
+       .update(updateData);
 
     widget.refreshData(currentAmount + inputAmount);
     // Show success message

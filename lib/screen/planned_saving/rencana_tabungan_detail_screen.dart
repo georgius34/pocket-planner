@@ -7,7 +7,7 @@ import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/widgets/deadlineProgress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/widgets/planned_saving/tabungan_detail.dart';
-import 'package:pocket_planner/widgets/planned_saving/update_rencana_form.dart';
+import 'package:pocket_planner/widgets/planned_saving/update_planned_saving_form.dart';
 import 'package:intl/intl.dart';
 
 class RencanaTabunganDetailScreen extends StatefulWidget {
@@ -50,7 +50,7 @@ class _RencanaTabunganDetailScreenState
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userId)
-          .collection("rencanaTabungan")
+          .collection("plannedSaving")
           .doc(_rencanaData['id'])
           .delete();
 
@@ -93,12 +93,29 @@ class _RencanaTabunganDetailScreenState
     );
   }
 
-  void _refreshData(int newAmount) {
+void _refreshData(int newAmount) async {
+  try {
+    // Fetch updated data from Firestore
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('plannedSaving')
+      .doc(_rencanaData['id'])
+      .get();
+
+    // Update state with new data
     setState(() {
-      _rencanaData['currentAmount'] = newAmount;
-      _rencanaData['progress'] = ((newAmount / _rencanaData['targetAmount']) * 100).toInt();
+      _rencanaData = snapshot.data()!;
+      // Recalculate monthly saving based on updated current amount and period
+      int remainingAmount = _rencanaData['targetAmount'] - _rencanaData['currentAmount'];
+      int periode = _rencanaData['periode'];
+      int monthlySaving = (remainingAmount / periode).ceil();
+      _rencanaData['monthlySaving'] = monthlySaving;
     });
+  } catch (e) {
+    print('Failed to refresh data: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +125,13 @@ class _RencanaTabunganDetailScreenState
     final int startDateEpoch = _rencanaData['startDate'];
     final int endDateEpoch = _rencanaData['endDate'];
     final String description = _rencanaData['description'];
-    final int deadline = _rencanaData['deadline'];
+    final int periode = _rencanaData['periode'];
     final int progress = _rencanaData['progress'];
     final int bunga = _rencanaData['interest'];
     final int taxRate = _rencanaData['taxRate'];
     final int totalInterest = _rencanaData['totalInterest'];
     final int monthlySaving = _rencanaData['monthlySaving'];
+    final bool isComplete = _rencanaData['isComplete'] ?? false;
     final DateTime createdAtDate = DateTime.fromMillisecondsSinceEpoch(_rencanaData['createdAt']);
     final DateTime updatedAtDate = DateTime.fromMillisecondsSinceEpoch(_rencanaData['updatedAt']);
     final DateTime startDate = DateTime.fromMillisecondsSinceEpoch(startDateEpoch);
@@ -121,8 +139,18 @@ class _RencanaTabunganDetailScreenState
 
     final String createdAt = getDateTimeFormatter().format(createdAtDate);
     final String updatedAt = getDateTimeFormatter().format(updatedAtDate);
-        final String formattedStartDate = getDateFormatter().format(startDate);
+    final String formattedStartDate = getDateFormatter().format(startDate);
     final String formattedEndDate = getDateFormatter().format(endDate);
+
+    // Calculate the number of days remaining until the end date
+    DateTime today = DateTime.now();
+    int totalRemainingDays = endDate.difference(today).inDays;
+
+    int remainingMonths = totalRemainingDays ~/ 30; // Calculate the remaining months
+    
+    // Set a minimum value of 0 for remainingMonths and remainingDays
+    if (remainingMonths < 0) remainingMonths = 0;
+    if (totalRemainingDays < 0) totalRemainingDays = 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -153,7 +181,7 @@ class _RencanaTabunganDetailScreenState
                 refreshData: _refreshData,
               ),          
               SizedBox(height: 20),
-              DeadlineAndProgressBox(deadline: deadline, progress: progress),
+              DeadlineAndProgressBox(endDateEpoch: endDateEpoch, progress: progress, isComplete: isComplete),
               SizedBox(height: 20),
               _buildRencanaBox(
                 context,
@@ -162,7 +190,7 @@ class _RencanaTabunganDetailScreenState
                 formattedStartDate,
                 formattedEndDate,
                 description,
-                deadline,
+                periode,
                 bunga,
                 taxRate,
                 createdAt,
@@ -251,8 +279,6 @@ class _RencanaTabunganDetailScreenState
           buildDetailBox('End Date', endDate),
           SizedBox(height: 5),
           buildDetailBox('Description', description),
-          SizedBox(height: 5),
-          buildDetailBox('Deadline', '$deadline hari'),
           SizedBox(height: 5),
           buildDetailBox('Interest', bunga.toString()),
           SizedBox(height: 5),

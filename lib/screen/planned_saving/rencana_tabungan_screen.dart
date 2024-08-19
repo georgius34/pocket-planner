@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/screen/planned_saving/rencana_tabungan_detail_screen.dart';
-import 'package:pocket_planner/widgets/planned_saving/add_planned_saving.dart';
-import 'package:pocket_planner/widgets/planned_saving/rencana_tabungan_card.dart';
+import 'package:pocket_planner/widgets/planned_saving/add_planned_saving_form.dart';
+import 'package:pocket_planner/widgets/planned_saving/planned_saving_card.dart';
 
 class RencanaTabunganScreen extends StatefulWidget {
   final String userId;
@@ -68,9 +68,8 @@ class _RencanaTabunganScreenState extends State<RencanaTabunganScreen> {
                         stream: FirebaseFirestore.instance
                             .collection('users')
                             .doc(widget.userId)
-                            .collection('rencanaTabungan')
+                            .collection('plannedSaving')
                             .limit(10)
-                            .orderBy('deadline', descending: false)
                             .snapshots(),
                         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           if (snapshot.hasError) {
