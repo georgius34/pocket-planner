@@ -110,7 +110,7 @@ Future<void> _updateCurrentAmount() async {
     await FirebaseFirestore.instance
        .collection('users')
        .doc(widget.userId)
-       .collection('rencanaTabungan')
+       .collection('plannedSaving')
        .doc(widget.rencanaTabunganId)
        .update(updateData);
 

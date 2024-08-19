@@ -105,7 +105,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       'currentAmount': currentAmount,
       'totalInterest': totalInterest,
       'monthlySaving': monthlySaving,
-      'period': period,
+      'periode': period,
       'progress': progress,
       'description': descriptionController.text,
       'type': type,
