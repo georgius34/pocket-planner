@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/screen/dashboard.dart';
+import 'package:pocket_planner/screen/Home.dart';
 import 'package:pocket_planner/utils/detail_box.dart';
 import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/widgets/deadlineProgress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pocket_planner/widgets/planned_saving/tabungan_detail.dart';
+import 'package:pocket_planner/widgets/planned_saving/planned_saving_detail.dart';
 import 'package:pocket_planner/widgets/planned_saving/update_planned_saving_form.dart';
 import 'package:intl/intl.dart';
 
@@ -48,6 +48,7 @@ class _RencanaTabunganDetailScreenState
   void _deleteTransaction(BuildContext context) async {
     try {
       await FirebaseFirestore.instance
+      
           .collection('users')
           .doc(widget.userId)
           .collection("plannedSaving")
@@ -108,8 +109,8 @@ void _refreshData(int newAmount) async {
       _rencanaData = snapshot.data()!;
       // Recalculate monthly saving based on updated current amount and period
       int remainingAmount = _rencanaData['targetAmount'] - _rencanaData['currentAmount'];
-      int periode = _rencanaData['periode'];
-      int monthlySaving = (remainingAmount / periode).ceil();
+      int period = _rencanaData['period'];
+      int monthlySaving = (remainingAmount / period).ceil();
       _rencanaData['monthlySaving'] = monthlySaving;
     });
   } catch (e) {
@@ -125,7 +126,7 @@ void _refreshData(int newAmount) async {
     final int startDateEpoch = _rencanaData['startDate'];
     final int endDateEpoch = _rencanaData['endDate'];
     final String description = _rencanaData['description'];
-    final int periode = _rencanaData['periode'];
+    final int period = _rencanaData['period'];
     final int progress = _rencanaData['progress'];
     final int bunga = _rencanaData['interest'];
     final int taxRate = _rencanaData['taxRate'];
@@ -190,11 +191,12 @@ void _refreshData(int newAmount) async {
                 formattedStartDate,
                 formattedEndDate,
                 description,
-                periode,
+                period,
                 bunga,
                 taxRate,
                 createdAt,
                 updatedAt,
+                isComplete,
               ),
             ],
           ),
@@ -214,6 +216,7 @@ void _refreshData(int newAmount) async {
     int taxRate,
     String createdAt,
     String updatedAt,
+    bool isComplete,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -247,7 +250,8 @@ void _refreshData(int newAmount) async {
                   color: Colors.green.shade900,
                 ),
               ),
-             ElevatedButton(
+                if (!isComplete)
+              ElevatedButton(
                 onPressed: () async {
                   showDialog(
                     context: context,
@@ -261,14 +265,14 @@ void _refreshData(int newAmount) async {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.green.shade600,
-                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0), // Adjust padding here
-                    minimumSize: Size(135, 35), // Set minimum size to zero to allow for smaller dimensions
+                  backgroundColor: Colors.green.shade600,
+                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+                  minimumSize: Size(135, 35),
                 ),
                 child: Text('Update Plan', style: TextStyle(color: Colors.white)),
               ),
-            ],
-          ),
+          ],
+        ),
           SizedBox(height: 20),
           buildDetailBox('Title', title),
           SizedBox(height: 5),

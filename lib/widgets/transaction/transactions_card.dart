@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pocket_planner/widgets/transaction/transaction_card.dart';
-import 'package:pocket_planner/widgets/transaction/transaction_detail.dart';
+import 'package:pocket_planner/screen/transaction/transaction_detail_screen.dart';
 //ignore_for_file: prefer_const_constructors
 //ignore_for_file: prefer_const_literals_to_create_immutables
 
@@ -117,7 +117,7 @@ class TransactionList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TransactionDetailsPage(
+                    builder: (context) => TransactionDetailsScreen(
                       userId: userId, 
                       transactionData: cardData.data(),
                     ),

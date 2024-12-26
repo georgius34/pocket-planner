@@ -16,11 +16,11 @@ class NavBar extends StatelessWidget {
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(
-              Icons.home,
+              Icons.attach_money,
               color: Colors.green,
               size: 30,
               ),
-            label: 'Dashboard',
+            label: 'Transaction Screen',
           ),
           NavigationDestination(
             icon: Icon(
@@ -28,7 +28,7 @@ class NavBar extends StatelessWidget {
               color: Colors.green,
               size: 30,
               ),
-            label: 'Laporan Keuangan',
+            label: 'Financial Report',
           ),
           NavigationDestination(
             icon: Icon(
@@ -36,7 +36,7 @@ class NavBar extends StatelessWidget {
               color: Colors.green,
               size: 30,
               ),
-            label: 'Rencana Tabungan',
+            label: 'Planned Savings',
           ),
         ],
       );

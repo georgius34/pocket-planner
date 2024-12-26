@@ -129,13 +129,13 @@ class Cards extends StatelessWidget {
                 children: [
                   CardOne(
                     color: Colors.green,
-                    heading: 'Credit',
+                    heading: 'Income',
                     amount: currencyFormatter.format(totalCredit),
                   ),
                   SizedBox(width: 10), // space
                   CardOne(
                     color: Colors.red,
-                    heading: 'Debit',
+                    heading: 'Expense',
                     amount: currencyFormatter.format(totalDebit),
                   ),
                 ],

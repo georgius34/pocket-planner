@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pocket_planner/screen/dashboard.dart';
+import 'package:pocket_planner/screen/Home.dart';
 
 class SplashScreen extends StatefulWidget {
  final String userId; // Add userId as a parameter

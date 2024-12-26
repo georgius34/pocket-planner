@@ -39,7 +39,7 @@ class _UpdateRencanaTabunganFormState extends State<UpdateRencanaTabunganForm> {
     _titleController.text = _rencanaData['title'];
     _targetAmountController.text = _formatAmount(_rencanaData['targetAmount'].toString());
     _descriptionController.text = _rencanaData['description'];
-  _periodController.text = _rencanaData['period'].toString(); // Corrected here
+  _periodController.text = _rencanaData['period'].toString();
     currentAmount = _rencanaData['currentAmount'];
   }
 
@@ -70,17 +70,15 @@ Future<void> _submitForm() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     String amountText = _targetAmountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
     var targetAmount = int.parse(amountText);
-    int period = int.parse(_periodController.text); // Change here to use periodController
+    int period = int.parse(_periodController.text); 
 
     // Calculate start and end dates
-    final startDate = DateTime.now(); // Start date is today's date
+    final startDate = DateTime.now();
     final endDate = DateTime(startDate.year, startDate.month + period, startDate.day);
     int endDateEpoch = endDate.millisecondsSinceEpoch;
 
-    int totalInterest = 0; // Initialize profit variable
-
     int newProgress = ((currentAmount / targetAmount) * 100).toInt();
-    int monthlySaving = (targetAmount / period).ceil();
+    int monthlySaving = ((targetAmount-currentAmount) / period).ceil();
 
     var data = {
       'title': _titleController.text,
@@ -88,8 +86,7 @@ Future<void> _submitForm() async {
       'description': _descriptionController.text,
       'period': period,
       'monthlySaving': monthlySaving,
-      'endDate': endDateEpoch, // Update end date in Firestore
-      'totalInterest': totalInterest,
+      'endDate': endDateEpoch,
       'progress': newProgress,
     };
 

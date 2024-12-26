@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 //ini harus di jelasin nanti kalau jika rencananya masih belum terpenuhi maka
@@ -69,41 +68,39 @@ Future<void> _updateCurrentAmount() async {
   try {
     int targetAmount = widget.rencanaData['targetAmount'].toInt();
     int currentAmount = widget.rencanaData['currentAmount'].toInt() ?? 0;
-    int periode = widget.rencanaData['periode'];
+    int period = widget.rencanaData['period'];
 
     // Parse the amount directly from the text field's value
     String amountText = _amountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
-    int inputAmount = int.parse(amountText); // Change double to int
+    int inputAmount = int.parse(amountText); 
 
-    // Calculate remaining amount needed to reach target
-    int remainingAmount = targetAmount - currentAmount;
-
-    // If input amount exceeds remaining amount, adjust it
-    if (inputAmount > remainingAmount) {
-      inputAmount = remainingAmount;
-      _formatAmount(); // Call _formatAmount() to update the text field's value
-    }
-    // Calculate new remaining amount
-    remainingAmount -= inputAmount;
-
-    // Deduct one month from the period
-    periode -= 1; 
-
-    // Check if the plan is complete
-    bool isPlanComplete = (remainingAmount <= 0 || periode <= 0);
-
-    // Calculate new monthly saving only if the plan is not complete
-    int monthlySaving = isPlanComplete ? 0 : (remainingAmount / periode).ceil();
 
     double progressDouble = ((currentAmount + inputAmount) / targetAmount) * 100;
     int newProgress = progressDouble.toInt();
+
+    //validasi amountText
+    int remainingAmount = targetAmount - currentAmount;
+    if (inputAmount > remainingAmount) {
+      inputAmount = remainingAmount;
+      _formatAmount(); 
+    }
+
+    remainingAmount -= inputAmount;
+    bool isPlanComplete = (remainingAmount <= 0);
+    period -= 1; 
+    if(period < 1){
+      period = 1;
+    }
+    // Calculate new monthlySaving
+    int monthlySaving = isPlanComplete ? 0 : (remainingAmount / period).ceil();
+
 
     // Prepare update data
     Map<String, dynamic> updateData = {
       'currentAmount': currentAmount + inputAmount,
       'progress': newProgress,
       'monthlySaving': monthlySaving,
-      'periode': periode,
+      'period': period,
       'isComplete': isPlanComplete,
     };
 

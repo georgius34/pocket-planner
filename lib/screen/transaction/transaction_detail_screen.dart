@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:pocket_planner/screen/dashboard.dart';
+import 'package:pocket_planner/screen/Home.dart';
 import 'package:pocket_planner/utils/detail_box.dart';
 import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/widgets/transaction/update_transaction.dart';
 
-class TransactionDetailsPage extends StatefulWidget {
+class TransactionDetailsScreen extends StatefulWidget {
   final String userId;
   final dynamic transactionData;
 
-  const TransactionDetailsPage({Key? key, required this.transactionData, required this.userId})
+  const TransactionDetailsScreen({Key? key, required this.transactionData, required this.userId})
       : super(key: key);
 
   @override
-  State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
+  State<TransactionDetailsScreen> createState() => _TransactionDetailsScreenState();
 }
 
-class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
+class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   late dynamic _transactionData;
   final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
@@ -171,9 +171,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
           SizedBox(height: 5),
           buildDetailBox('updated At', updatedAt),
           SizedBox(height: 5),
-          buildDetailBox('Total Credit',  _currencyFormat.format(totalCredit)),
+          buildDetailBox('Total Income',  _currencyFormat.format(totalCredit)),
           SizedBox(height: 5),
-          buildDetailBox('Total Debit',  _currencyFormat.format(totalDebit)),
+          buildDetailBox('Total Expense',  _currencyFormat.format(totalDebit)),
           SizedBox(height: 5),
           buildDetailBox('Type', type),
           SizedBox(height: 5),
@@ -219,14 +219,14 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
       int remainingAmount = userDoc['remainingAmount'] as int;
 
       // Update totalCredit and totalDebit based on the type of transaction
-      if (type == 'credit') {
+      if (type == 'income') {
         totalCredit -= amount;
       } else {
         totalDebit -= amount;
       }
 
       // Update remainingAmount based on the type of transaction
-      remainingAmount += (type == 'credit') ? -amount : amount;
+      remainingAmount += (type == 'income') ? -amount : amount;
 
       // Update the user document in Firestore with the new values
       await FirebaseFirestore.instance.collection('users').doc(widget.userId).update({

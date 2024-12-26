@@ -16,8 +16,8 @@ class TransactionCard extends StatelessWidget {
   var appIcons = AppIcons();
 
   @override
-  Widget build(BuildContext context) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['dateTime']);
+  Widget build(BuildContext context) {  
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['createdAt']);
     final DateFormat dateTimeFormatter = getDateTimeFormatter();
     final NumberFormat currencyFormatter = getCurrencyFormatter();
       String category = data['category'];

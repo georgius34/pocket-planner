@@ -75,7 +75,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
     int currentAmount = 0;
     int taxRate = taxController.text.isEmpty ? 0 : int.parse(taxController.text);
     int bunga = bungaController.text.isEmpty ? 0 : int.parse(bungaController.text);
-    int period = int.parse(periodController.text); // Change here to use periodController
+    int period = int.parse(periodController.text);
     String type = _selectedType ?? "personal";
 
     final startDate = DateTime.now();
@@ -105,7 +105,7 @@ class _AddRencanaTabunganFormState extends State<AddRencanaTabunganForm> {
       'currentAmount': currentAmount,
       'totalInterest': totalInterest,
       'monthlySaving': monthlySaving,
-      'periode': period,
+      'period': period,
       'progress': progress,
       'description': descriptionController.text,
       'type': type,

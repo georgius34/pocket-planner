@@ -17,22 +17,28 @@ class UpdateTransactionForm extends StatefulWidget {
 
 class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
   late String type;
-  late String category;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var isLoader = false;
   var appValidator = AppValidator();
   var amountEditController = TextEditingController();
   var titleEditController = TextEditingController();
+  var categoryController = TextEditingController();
+  var dateController = TextEditingController();
+  DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
     amountEditController.text = _formatAmount(widget.transactionData['amount'].toString());
     titleEditController.text = widget.transactionData['title'];
-    category = widget.transactionData['category'];
+    categoryController.text = widget.transactionData['category'];
     type = widget.transactionData['type'];
-
+  // Convert the stored date to DateTime if it's in milliseconds since epoch
+  DateTime storedDate = DateTime.fromMillisecondsSinceEpoch(widget.transactionData['dateTime']);
+  
+  // Format the stored DateTime to your desired format (e.g., "dd/MM/yyyy")
+  dateController.text = getDateFormatter().format(storedDate);
   // Add a listener to format the amount dynamically
   amountEditController.addListener(_onAmountChanged);
   }
@@ -42,6 +48,8 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
     amountEditController.removeListener(_onAmountChanged);
     amountEditController.dispose();
     titleEditController.dispose();
+    dateController.dispose(); // Add this line
+    categoryController.dispose();
     super.dispose();
   }
 
@@ -62,6 +70,25 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
   );
 }
 
+ // Add this method to show the date picker
+void _pickDate(BuildContext context) async {
+  final initialDate = DateTime.now();
+  final pickedDate = await showDatePicker(
+    context: context,
+    initialDate: selectedDate ?? initialDate,
+    firstDate: DateTime(DateTime.now().year - 1),
+    lastDate: DateTime(DateTime.now().year + 1),
+  );
+
+  if (pickedDate != null) {
+    setState(() {
+      selectedDate = pickedDate;
+      // Format the selected date and update the controller
+      dateController.text = getDateFormatter().format(selectedDate!);
+    });
+  }
+}
+
   Future<void> _updateTransaction(String userId) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -73,10 +100,9 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
       if (userDoc.exists) {
         String amountText = amountEditController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
         var newAmount = int.parse(amountText);
-        // Get the current date and time in DateTime format
+        
         DateTime now = DateTime.now();
 
-        // Get the current date and time in milliseconds since epoch format
         int millisecondsSinceEpoch = now.millisecondsSinceEpoch;
 
         int remainingAmount = userDoc['remainingAmount'];
@@ -85,6 +111,8 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
 
         int oldAmount = widget.transactionData['amount'];
         var oldType = widget.transactionData['type'];
+
+        String category = categoryController.text.toLowerCase().trim();
 
         // Adjust totals by subtracting the old amount
         if (oldType == 'credit') {
@@ -118,7 +146,7 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
           "amount": newAmount,
           "category": category,
           "type": type,
-          "dateTime": millisecondsSinceEpoch,
+          "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
           "totalCredit": totalCredit,
           "totalDebit": totalDebit,
           "remainingAmount": remainingAmount,
@@ -181,17 +209,19 @@ class _UpdateTransactionFormState extends State<UpdateTransactionForm> {
                 validator: appValidator.validateAmount,
                 isAmount: true,
               ),
-              SizedBox(height: 10),
-               buildCategoryDropDownInput(
-                userId: widget.userId,
+              buildDateInputRow(
+                label: 'Date',
+                icon: Icons.calendar_today,
+                controller: dateController,
+                onTap: () => _pickDate(context),
+                validator: appValidator.isEmptyCheck,
+              ),
+             SizedBox(height: 10),
+               buildInputRow(
                 label: 'Category',
                 icon: Icons.category,
-                category: category,
-                onChanged: (value) {
-                  setState(() {
-                    category = value!;
-                  });
-                },
+                controller: categoryController,
+                validator: appValidator.isEmptyCheck,
               ),
               SizedBox(height: 10),
                buildTypeDropDownInput(

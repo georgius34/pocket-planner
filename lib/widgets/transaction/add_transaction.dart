@@ -97,7 +97,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         int totalCredit = userDoc['totalCredit'];
         int totalDebit = userDoc['totalDebit'];
 
-        String categoryToAdd = categoryController.text.toLowerCase().trim();
+        String category = categoryController.text.toLowerCase().trim();
 
         if (type == 'credit') {
           remainingAmount += amount;
@@ -118,7 +118,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           "id": id,
           "title": titleController.text,
           "amount": amount,
-          "category": categoryToAdd,
+          "category": category,
           "type": type,
           "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
           "createdAt": millisecondsSinceEpoch,

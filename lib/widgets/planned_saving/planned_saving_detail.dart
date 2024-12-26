@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pocket_planner/utils/format.dart';
-import 'package:pocket_planner/widgets/planned_saving/add_progress.dart';
+import 'package:pocket_planner/widgets/planned_saving/add_saving.dart';
 
 class TabunganDetailBox extends StatelessWidget {
   final int currentAmount;
