@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pocket_planner/screen/planned_saving/rencana_tabungan_detail_screen.dart';
+import 'package:pocket_planner/screen/planned_saving/planned_saving_detail_screen.dart';
 import 'package:pocket_planner/widgets/planned_saving/add_planned_saving_form.dart';
 import 'package:pocket_planner/widgets/planned_saving/planned_saving_card.dart';
 

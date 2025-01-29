@@ -42,13 +42,17 @@ class RencanaTabunganCard extends StatelessWidget {
     Color statusColor = Colors.grey.shade600;
     String statusText = '';
 
-    if (isComplete) {
-      statusColor = Colors.green;
-      statusText = 'Plan Completed';
-    } else if (today.isAfter(endDate)) {
-      statusColor = Colors.red;
-      statusText = 'Plan is not Completed';
-    }
+  if (isComplete) {
+    statusColor = Colors.green;
+    statusText = 'Plan Completed';
+  } else if (today.isAfter(endDate)) {
+    statusColor = Colors.red;
+    statusText = 'Plan is not Completed';
+  } else {
+    statusColor = Colors.grey.shade600;
+    statusText = remainingTimeText;
+  }
+
 
     return Container(
       width: double.infinity,
@@ -95,9 +99,7 @@ class RencanaTabunganCard extends StatelessWidget {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    isComplete
-                      ? statusText
-                      : remainingTimeText,
+                    statusText,
                     style: TextStyle(
                       fontSize: 14,
                       color: statusColor,

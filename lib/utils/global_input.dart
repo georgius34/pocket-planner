@@ -41,49 +41,49 @@ import 'package:flutter/material.dart';
     );
   }
 
-Widget buildCategoryDropDownInput({
-  required String userId,
-  required String label,
-  required IconData icon,
-  required String category,
-  required void Function(String?) onChanged,
-}) {
-  return Row(
-    children: [
-      Icon(icon, color: Colors.green.shade600),
-      SizedBox(width: 10),
-      Expanded(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .collection('categories')
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return CircularProgressIndicator();
-            }
-            final categories = snapshot.data!.docs.map((doc) {
-              return DropdownMenuItem<String>(
-                value: doc['name'],
-                child: Text(doc['name']),
-              );
-            }).toList();
-            return DropdownButtonFormField<String>(
-              value: category,
-              onChanged: onChanged,
-              items: categories,
-              decoration: InputDecoration(
-                labelText: label,
-                border: OutlineInputBorder(),
-              ),
-            );
-          },
-        ),
-      ),
-    ],
-  );
-}
+// Widget buildCategoryDropDownInput({
+//   required String userId,
+//   required String label,
+//   required IconData icon,
+//   required String category,
+//   required void Function(String?) onChanged,
+// }) {
+//   return Row(
+//     children: [
+//       Icon(icon, color: Colors.green.shade600),
+//       SizedBox(width: 10),
+//       Expanded(
+//         child: StreamBuilder<QuerySnapshot>(
+//           stream: FirebaseFirestore.instance
+//               .collection('users')
+//               .doc(userId)
+//               .collection('categories')
+//               .snapshots(),
+//           builder: (context, snapshot) {
+//             if (!snapshot.hasData) {
+//               return CircularProgressIndicator();
+//             }
+//             final categories = snapshot.data!.docs.map((doc) {
+//               return DropdownMenuItem<String>(
+//                 value: doc['name'],
+//                 child: Text(doc['name']),
+//               );
+//             }).toList();
+//             return DropdownButtonFormField<String>(
+//               value: category,
+//               onChanged: onChanged,
+//               items: categories,
+//               decoration: InputDecoration(
+//                 labelText: label,
+//                 border: OutlineInputBorder(),
+//               ),
+//             );
+//           },
+//         ),
+//       ),
+//     ],
+//   );
+// }
 
   Widget buildTypeDropDownInput({
     required String label,

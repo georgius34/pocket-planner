@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_planner/screen/transaction/transaction_screen.dart';
-import 'package:pocket_planner/screen/financial_report/laporan_keuangan_screen.dart';
-import 'package:pocket_planner/screen/planned_saving/rencana_tabungan_screen.dart';
+import 'package:pocket_planner/screen/financial_report/financial_report_screen.dart';
+import 'package:pocket_planner/screen/planned_saving/planned_saving_screen.dart';
 import 'package:pocket_planner/widgets/navbar.dart';
 //ignore_for_file: prefer_const_constructors
 // ignore_for_file: use_super_parameters

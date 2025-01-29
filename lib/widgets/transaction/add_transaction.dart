@@ -85,65 +85,63 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
 
-      if (userDoc.exists) {
-        String amountText = amountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
-        var amount = int.parse(amountText);
-        var id = uid.v4();
+      String amountText = amountController.text.replaceAll(RegExp(r'[Rp,. ]'), '');
+      var amount = int.parse(amountText);
+      var id = uid.v4();
 
-        DateTime now = DateTime.now();
-        int millisecondsSinceEpoch = now.millisecondsSinceEpoch;
+      DateTime now = DateTime.now();
+      int millisecondsSinceEpoch = now.millisecondsSinceEpoch;
 
-        int remainingAmount = userDoc['remainingAmount'];
-        int totalCredit = userDoc['totalCredit'];
-        int totalDebit = userDoc['totalDebit'];
+      int remainingAmount = userDoc['remainingAmount'];
+      int totalCredit = userDoc['totalCredit'];
+      int totalDebit = userDoc['totalDebit'];
 
-        String category = categoryController.text.toLowerCase().trim();
+      String category = categoryController.text.toLowerCase().trim();
 
-        if (type == 'credit') {
-          remainingAmount += amount;
-          totalCredit += amount;
-        } else {
-          remainingAmount -= amount;
-          totalDebit += amount;
-        }
-
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          "remainingAmount": remainingAmount,
-          "totalCredit": totalCredit,
-          "totalDebit": totalDebit,
-          "updatedAt": millisecondsSinceEpoch,
-        });
-
-        var data = {
-          "id": id,
-          "title": titleController.text,
-          "amount": amount,
-          "category": category,
-          "type": type,
-          "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
-          "createdAt": millisecondsSinceEpoch,
-          "updatedAt": millisecondsSinceEpoch,
-          "totalCredit": totalCredit,
-          "totalDebit": totalDebit,
-          "remainingAmount": remainingAmount
-        };
-
-        await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection("transaction").doc(id).set(data);
-
-        amountController.clear();
-        titleController.clear();
-        dateController.clear(); // Add this line
-
-        setState(() {
-          isLoader = false;
-        });
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Transaction added successfully')),
-      );
-
-        Navigator.pop(context);
+      if (type == 'credit') {
+        remainingAmount += amount;
+        totalCredit += amount;
+      } else {
+        remainingAmount -= amount;
+        totalDebit += amount;
       }
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        "remainingAmount": remainingAmount,
+        "totalCredit": totalCredit,
+        "totalDebit": totalDebit,
+        "updatedAt": millisecondsSinceEpoch,
+      });
+
+      var data = {
+        "id": id,
+        "title": titleController.text,
+        "amount": amount,
+        "category": category,
+        "type": type,
+        "dateTime": selectedDate?.millisecondsSinceEpoch ?? millisecondsSinceEpoch, // Update this line
+        "createdAt": millisecondsSinceEpoch,
+        "updatedAt": millisecondsSinceEpoch,
+        "totalCredit": totalCredit,
+        "totalDebit": totalDebit,
+        "remainingAmount": remainingAmount
+      };
+
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection("transaction").doc(id).set(data);
+
+      amountController.clear();
+      titleController.clear();
+      dateController.clear(); // Add this line
+
+      setState(() {
+        isLoader = false;
+      });
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Transaction added successfully')),
+    );
+
+      Navigator.pop(context);
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:pocket_planner/screen/Home.dart';
+import 'package:pocket_planner/screen/dashboard.dart';
 import 'package:pocket_planner/utils/detail_box.dart';
 import 'package:pocket_planner/utils/format.dart';
 import 'package:pocket_planner/widgets/transaction/update_transaction.dart';
@@ -171,9 +171,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
           SizedBox(height: 5),
           buildDetailBox('updated At', updatedAt),
           SizedBox(height: 5),
-          buildDetailBox('Total Income',  _currencyFormat.format(totalCredit)),
+          buildDetailBox('Total Credit',  _currencyFormat.format(totalCredit)),
           SizedBox(height: 5),
-          buildDetailBox('Total Expense',  _currencyFormat.format(totalDebit)),
+          buildDetailBox('Total Debit',  _currencyFormat.format(totalDebit)),
           SizedBox(height: 5),
           buildDetailBox('Type', type),
           SizedBox(height: 5),
@@ -219,14 +219,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       int remainingAmount = userDoc['remainingAmount'] as int;
 
       // Update totalCredit and totalDebit based on the type of transaction
-      if (type == 'income') {
+      if (type == 'credit') {
         totalCredit -= amount;
       } else {
         totalDebit -= amount;
       }
 
       // Update remainingAmount based on the type of transaction
-      remainingAmount += (type == 'income') ? -amount : amount;
+      remainingAmount += (type == 'credit') ? -amount : amount;
 
       // Update the user document in Firestore with the new values
       await FirebaseFirestore.instance.collection('users').doc(widget.userId).update({

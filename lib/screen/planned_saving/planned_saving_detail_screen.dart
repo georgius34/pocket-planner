@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:pocket_planner/screen/Home.dart';
+import 'package:pocket_planner/screen/dashboard.dart';
 import 'package:pocket_planner/utils/detail_box.dart';
 import 'package:pocket_planner/utils/format.dart';
-import 'package:pocket_planner/widgets/deadlineProgress.dart';
+import 'package:pocket_planner/widgets/planned_saving/deadlineProgress.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_planner/widgets/planned_saving/planned_saving_detail.dart';
 import 'package:pocket_planner/widgets/planned_saving/update_planned_saving_form.dart';

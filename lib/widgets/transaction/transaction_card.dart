@@ -17,7 +17,7 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {  
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['createdAt']);
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(data['dateTime']);
     final DateFormat dateTimeFormatter = getDateTimeFormatter();
     final NumberFormat currencyFormatter = getCurrencyFormatter();
       String category = data['category'];
